@@ -97,7 +97,7 @@ const TimeSpendingChart = () => {
           bottom: 12,
         }}
       >
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#3b82f6" />
         <XAxis
           dataKey="day"
           tickLine={false}
@@ -114,7 +114,7 @@ const TimeSpendingChart = () => {
           fill="var(--color-value)"
           radius={[8, 8, 0, 0]}
           barSize={32}
-          className="fill-indigo-500"
+          className="fill-primary"
         />
       </BarChart>
     </ChartContainer>
@@ -325,8 +325,8 @@ const Dashboard = () => {
         </div>
 
         <div className="flex flex-col items-center text-center">
-          <div className="relative mb-3">
-            <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+          <div className="relative mb-3 ">
+            <Avatar className="h-24 w-24 border-4 shadow-lg border-primary">
               <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop" />
               <AvatarFallback>RP</AvatarFallback>
             </Avatar>
@@ -389,7 +389,7 @@ const Dashboard = () => {
                   date.active ? "w-16" : "w-12"
                 } h-16 rounded-2xl transition-all cursor-pointer ${
                   date.active
-                    ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/30 scale-110"
+                    ? "bg-primary text-white shadow-lg shadow-primary/30 scale-110"
                     : "hover:bg-muted/50 text-muted-foreground"
                 }`}
               >
