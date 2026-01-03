@@ -22,6 +22,45 @@ const stats = [
   { title: "Completion Rate", value: "94%", icon: TrendingUp, variant: "warning" as const, trend: { value: 5, isPositive: true } },
 ];
 
+const teachers = [
+  {
+    id: "t1",
+    name: "Dr. Emily Carter",
+    designation: "Senior Data Scientist",
+    image:
+      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800&h=600&fit=crop",
+    description:
+      "10+ years in AI and machine learning, former lead at TechCorp.",
+  },
+  {
+    id: "t2",
+    name: "Michael Nguyen",
+    designation: "Frontend Architect",
+    image:
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
+    description:
+    "React, TypeScript, and performance specialist. Speaker at JSConf.",
+  },
+  {
+    id: "t3",
+    name: "Aisha Patel",
+    designation: "Product Design Lead",
+    image:
+    "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800&h=600&fit=crop",
+    description:
+    "Human-centered design expert with award-winning portfolios.",
+  },
+  {
+    id: "t4",
+    name: "Prof. Daniel Kim",
+    designation: "Cloud & DevOps Expert",
+    image:
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
+    description:
+      "AWS, Kubernetes, and automation practitioner for large-scale systems.",
+  },
+];
+
 const HomePage = () => {
   return (
     <div>
@@ -168,6 +207,44 @@ const HomePage = () => {
                   Get Started for Free <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+            </div>
+          </section>
+
+          {/* Teacher Section */}
+          <section className="py-20">
+            <div className="container space-y-12 mx-auto">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl lg:text-4xl font-bold font-display">Our Instructors</h2>
+                  <p className="text-muted-foreground mt-2">Learn from industry experts with proven experience</p>
+                </div>
+                <Button variant="outline" asChild>
+                  <Link href="/instructors">
+                    View All Instructors <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {teachers.map((t, i) => (
+                  <motion.div
+                    key={t.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    className="bg-card border border-border rounded-xl overflow-hidden shadow-sm"
+                  >
+                    <div className="aspect-[4/3]">
+                      <img src={t.image} alt={t.name} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="p-4 space-y-2">
+                      <h3 className="font-semibold text-lg">{t.name}</h3>
+                      <p className="text-sm text-muted-foreground">{t.designation}</p>
+                      <p className="text-sm text-muted-foreground">{t.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </section>
         </main>
