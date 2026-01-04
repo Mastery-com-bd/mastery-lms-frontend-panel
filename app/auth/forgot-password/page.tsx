@@ -1,9 +1,9 @@
-import Profile from "@/components/dashboard/profile/Profile";
+import ForgotPassword from "@/components/auth/ForgotPassword";
 
 const Page = () => {
   return (
     <div className="w-full h-full">
-      <Profile />
+      <ForgotPassword />
     </div>
   );
 };

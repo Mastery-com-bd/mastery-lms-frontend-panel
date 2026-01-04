@@ -1,9 +1,9 @@
-import Settings from "@/components/dashboard/settings/Settings"
+import ResetPassword from "@/components/auth/ResetPassword"
 
 const Page = () => {
   return (
     <div className="w-full h-full">
-        <Settings />
+        <ResetPassword />
     </div>
   )
 }

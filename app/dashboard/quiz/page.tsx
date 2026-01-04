@@ -1,9 +1,9 @@
-import Profile from "@/components/dashboard/profile/Profile";
+import Quiz from "@/components/dashboard/quiz/quiz";
 
 const Page = () => {
   return (
     <div className="w-full h-full">
-      <Profile />
+      <Quiz />
     </div>
   );
 };

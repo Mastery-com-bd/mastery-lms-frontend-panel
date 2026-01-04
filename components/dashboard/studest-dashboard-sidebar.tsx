@@ -1,8 +1,8 @@
 "use client";
 
-
 import {
   BookOpen,
+  FileQuestion,
   LayoutDashboard,
   LucideIcon,
   Search,
@@ -44,7 +44,7 @@ const SidebarItem = ({
 };
 
 const StudentDashboardSidebar = () => {
-    const currentPath = usePathname();
+  const currentPath = usePathname();
   return (
     <div>
       <aside className="w-full lg:w-64 border-r border-border p-6 flex-col gap-8 bg-card/30 hidden md:flex">
@@ -63,11 +63,42 @@ const StudentDashboardSidebar = () => {
         </div>
 
         <nav className="space-y-1 flex-1">
-          <SidebarItem icon={LayoutDashboard} label="Dashboard" href="/dashboard" isActive={currentPath === "/dashboard"} />
-          <SidebarItem icon={BookOpen} label="My Courses" href="/dashboard/my-courses" isActive={currentPath === "/dashboard/my-courses"} />
-          <SidebarItem icon={Users} label="Community" href="/dashboard/community" isActive={currentPath === "/dashboard/community"} />
-          <SidebarItem icon={User} label="profile" href="/dashboard/profile" isActive={currentPath === "/dashboard/profile"} />
-          <SidebarItem icon={Settings} label="Settings" href="/dashboard/settings" isActive={currentPath === "/dashboard/settings"} />
+          <SidebarItem
+            icon={LayoutDashboard}
+            label="Dashboard"
+            href="/dashboard"
+            isActive={currentPath === "/dashboard"}
+          />
+          <SidebarItem
+            icon={BookOpen}
+            label="My Courses"
+            href="/dashboard/my-courses"
+            isActive={currentPath === "/dashboard/my-courses"}
+          />
+          <SidebarItem
+            icon={FileQuestion}
+            label="Quiz System"
+            href="/dashboard/quiz"
+            isActive={currentPath === "/dashboard/quiz"}
+          />
+          <SidebarItem
+            icon={Users}
+            label="Community"
+            href="/dashboard/community"
+            isActive={currentPath === "/dashboard/community"}
+          />
+          <SidebarItem
+            icon={User}
+            label="profile"
+            href="/dashboard/profile"
+            isActive={currentPath === "/dashboard/profile"}
+          />
+          <SidebarItem
+            icon={Settings}
+            label="Settings"
+            href="/dashboard/settings"
+            isActive={currentPath === "/dashboard/settings"}
+          />
         </nav>
       </aside>
     </div>
