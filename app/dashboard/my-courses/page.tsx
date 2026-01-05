@@ -1,9 +1,11 @@
-import React from 'react'
+import MyCourses from "@/components/dashboard/my-courses/my-courses";
 
 const Page = () => {
   return (
-    <div>Page</div>
-  )
-}
+    <div className="w-full h-full">
+      <MyCourses />
+    </div>
+  );
+};
 
-export default Page
+export default Page;

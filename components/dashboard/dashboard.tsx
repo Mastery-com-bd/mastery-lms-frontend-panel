@@ -17,7 +17,10 @@ import {
   GraduationCap,
   Trophy,
 } from "lucide-react";
+import Link from "next/link";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { ScrollArea } from "../ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const CircularProgress = ({
   value,
@@ -97,7 +100,11 @@ const TimeSpendingChart = () => {
           bottom: 12,
         }}
       >
-        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#3b82f6" />
+        <CartesianGrid
+          vertical={false}
+          strokeDasharray="3 3"
+          stroke="#3b82f6"
+        />
         <XAxis
           dataKey="day"
           tickLine={false}
@@ -158,10 +165,80 @@ const Dashboard = () => {
             </h1>
             <p className="text-muted-foreground mt-1">04, October, 2022</p>
           </div>
-          <Button variant="ghost" size="icon" className="relative border">
-            <Bell className="h-5 w-5 text-muted-foreground" />
-            <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border border-background" />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative border group">
+                <Bell className="h-5 w-5 text-muted-foreground group-hover:text-white" />
+                <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border border-background" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="end">
+              <div className="p-4 border-b">
+                <h4 className="font-semibold">Notifications</h4>
+              </div>
+              <ScrollArea className="h-72">
+                <div className="divide-y">
+                  {[
+                    {
+                      id: 1,
+                      title: "New assignment available",
+                      desc: "UX Fundamentals - Module 3 quiz is now open",
+                      time: "5 min ago",
+                      unread: true,
+                    },
+                    {
+                      id: 2,
+                      title: "Class starting soon",
+                      desc: "UI Design live session begins in 15 minutes",
+                      time: "10 min ago",
+                      unread: true,
+                    },
+                    {
+                      id: 3,
+                      title: "Grade updated",
+                      desc: "Your submission for 'Wireframe Project' has been graded",
+                      time: "1 hour ago",
+                      unread: false,
+                    },
+                    {
+                      id: 4,
+                      title: "Course reminder",
+                      desc: "Complete 'Visual Hierarchy' lesson before tomorrow",
+                      time: "2 hours ago",
+                      unread: false,
+                    },
+                  ].map((n) => (
+                    <div
+                      key={n.id}
+                      className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
+                        n.unread ? "bg-blue-50/5" : ""
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{n.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {n.desc}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {n.time}
+                          </p>
+                        </div>
+                        {n.unread && (
+                          <span className="h-2 w-2 rounded-full bg-blue-500" />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className="p-2 border-t">
+                <Button variant="ghost" className="w-full text-xs" size="sm">
+                  View all notifications
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </header>
 
         {/* Time Spendings */}
@@ -220,7 +297,7 @@ const Dashboard = () => {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="flex items-center gap-3 min-w-[140px]"
+                  className="flex items-center gap-3 min-w-35"
                 >
                   <div
                     className={`h-10 w-10 rounded-full ${stat.bg} flex items-center justify-center`}
@@ -312,15 +389,21 @@ const Dashboard = () => {
       </main>
 
       {/* Right Sidebar */}
-      <aside className="w-full lg:w-80 border-l border-border bg-card/30 p-6 flex flex-col gap-8 hidden xl:flex">
+      <aside className="w-full lg:w-80 border-l border-border bg-card/30 p-6 flex-col gap-8 hidden xl:flex">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold">My Profile</h3>
           <Button
+            asChild
             variant="ghost"
             size="sm"
-            className="h-8 text-xs text-muted-foreground"
+            className="h-8 text-xs text-muted-foreground border"
           >
-            <Edit2 className="h-3 w-3 mr-1" /> Edit
+            <Link
+              href={"/dashboard/settings"}
+              className="flex items-center gap-2"
+            >
+              <Edit2 className="h-3 w-3 mr-1" /> Edit
+            </Link>
           </Button>
         </div>
 

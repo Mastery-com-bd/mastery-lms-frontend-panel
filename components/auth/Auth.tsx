@@ -189,7 +189,7 @@ export default function Auth({ mode }: { mode: "signup" | "signin" }) {
                 <Label htmlFor="password">Password</Label>
                 {!isSignUp && (
                   <Link
-                    href="/forgot-password"
+                    href="/auth/forgot-password"
                     className="text-sm text-primary hover:underline"
                   >
                     Forgot password?

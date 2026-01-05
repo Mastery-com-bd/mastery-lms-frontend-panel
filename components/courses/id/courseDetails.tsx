@@ -566,7 +566,7 @@ const CourseDetails = () => {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {course.relatedCourses.map((relatedCourse) => (
-              <CourseCard key={relatedCourse.id} {...relatedCourse} />
+              <CourseCard href={`/courses/${relatedCourse.id}`} key={relatedCourse.id} {...relatedCourse} />
             ))}
           </div>
         </section>

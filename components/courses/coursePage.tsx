@@ -201,7 +201,7 @@ export default function Courses() {
                       transition={{ delay: i * 0.05 }}
                     >
                       <CourseCard
-                        id={course.id}
+                        href={`/courses/${course.id}`}
                         title={course.title}
                         instructor={course.instructor || "Unknown Instructor"}
                         thumbnail={

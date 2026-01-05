@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookOpen, Users, Star } from "lucide-react";
 import { AllInstractors } from "@/constant/data";
+import Link from "next/link";
 
 const Instructors = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -151,10 +152,16 @@ const Instructors = () => {
                           </div>
 
                           <Button
+                            asChild
                             variant="outline"
                             className="mt-4 w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                           >
-                            View Profile
+                            <Link
+                              href={`/instructors/${instructor.id}`}
+                              className="w-full block"
+                            >
+                              View Profile
+                            </Link>
                           </Button>
                         </div>
                       </CardContent>

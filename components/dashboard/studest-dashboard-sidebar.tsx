@@ -83,9 +83,9 @@ const StudentDashboardSidebar = () => {
           />
           <SidebarItem
             icon={Users}
-            label="Community"
-            href="/dashboard/community"
-            isActive={currentPath === "/dashboard/community"}
+            label="Live Classes"
+            href="/dashboard/live-class"
+            isActive={currentPath === "/dashboard/live-class"}
           />
           <SidebarItem
             icon={User}

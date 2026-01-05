@@ -1,25 +1,103 @@
-"use client"
+"use client";
 
-import { ArrowRight, Award, BookOpen, Play, Star, TrendingUp, Users, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  Award,
+  BookOpen,
+  Play,
+  Star,
+  TrendingUp,
+  Users
+} from "lucide-react";
 import { motion } from "motion/react";
-import { GradientText } from "../ui/GradientText";
-import { Button } from "../ui/button";
+import Image from "next/image";
 import Link from "next/link";
-import { StatCard } from "../ui/StatCard";
 import { CourseCard } from "../courses/CourseCard";
+import { GradientText } from "../ui/GradientText";
+import { StatCard } from "../ui/StatCard";
+import { Button } from "../ui/button";
 
 const featuredCourses = [
-  { id: "1", title: "Complete React & TypeScript Masterclass", instructor: "Sarah Chen", thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=450&fit=crop", category: "Development", duration: "42h", students: 12500, rating: 4.9, price: 89.99, isFeatured: true },
-  { id: "2", title: "UI/UX Design Fundamentals", instructor: "Alex Rivera", thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop", category: "Design", duration: "28h", students: 8300, rating: 4.8, price: 69.99 },
-  { id: "3", title: "Data Science with Python", instructor: "Dr. James Liu", thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop", category: "Data Science", duration: "56h", students: 15200, rating: 4.9, price: 99.99 },
-  { id: "4", title: "Digital Marketing Mastery", instructor: "Emma Wilson", thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop", category: "Marketing", duration: "32h", students: 9800, rating: 4.7, price: 59.99 },
+  {
+    id: "1",
+    title: "Complete React & TypeScript Masterclass",
+    instructor: "Sarah Chen",
+    thumbnail:
+      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=450&fit=crop",
+    category: "Development",
+    duration: "42h",
+    students: 12500,
+    rating: 4.9,
+    price: 89.99,
+    isFeatured: true,
+  },
+  {
+    id: "2",
+    title: "UI/UX Design Fundamentals",
+    instructor: "Alex Rivera",
+    thumbnail:
+      "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
+    category: "Design",
+    duration: "28h",
+    students: 8300,
+    rating: 4.8,
+    price: 69.99,
+  },
+  {
+    id: "3",
+    title: "Data Science with Python",
+    instructor: "Dr. James Liu",
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
+    category: "Data Science",
+    duration: "56h",
+    students: 15200,
+    rating: 4.9,
+    price: 99.99,
+  },
+  {
+    id: "4",
+    title: "Digital Marketing Mastery",
+    instructor: "Emma Wilson",
+    thumbnail:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop",
+    category: "Marketing",
+    duration: "32h",
+    students: 9800,
+    rating: 4.7,
+    price: 59.99,
+  },
 ];
 
 const stats = [
-  { title: "Active Learners", value: "150K+", icon: Users, variant: "primary" as const, trend: { value: 23, isPositive: true } },
-  { title: "Expert Courses", value: "2,500+", icon: BookOpen, variant: "accent" as const, trend: { value: 12, isPositive: true } },
-  { title: "Certificates Issued", value: "89K+", icon: Award, variant: "success" as const, trend: { value: 18, isPositive: true } },
-  { title: "Completion Rate", value: "94%", icon: TrendingUp, variant: "warning" as const, trend: { value: 5, isPositive: true } },
+  {
+    title: "Active Learners",
+    value: "150K+",
+    icon: Users,
+    variant: "primary" as const,
+    trend: { value: 23, isPositive: true },
+  },
+  {
+    title: "Expert Courses",
+    value: "2,500+",
+    icon: BookOpen,
+    variant: "accent" as const,
+    trend: { value: 12, isPositive: true },
+  },
+  {
+    title: "Certificates Issued",
+    value: "89K+",
+    icon: Award,
+    variant: "success" as const,
+    trend: { value: 18, isPositive: true },
+  },
+  {
+    title: "Completion Rate",
+    value: "94%",
+    icon: TrendingUp,
+    variant: "warning" as const,
+    trend: { value: 5, isPositive: true },
+  },
 ];
 
 const teachers = [
@@ -37,25 +115,24 @@ const teachers = [
     name: "Michael Nguyen",
     designation: "Frontend Architect",
     image:
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
     description:
-    "React, TypeScript, and performance specialist. Speaker at JSConf.",
+      "React, TypeScript, and performance specialist. Speaker at JSConf.",
   },
   {
     id: "t3",
     name: "Aisha Patel",
     designation: "Product Design Lead",
     image:
-    "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800&h=600&fit=crop",
-    description:
-    "Human-centered design expert with award-winning portfolios.",
+      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=800&h=600&fit=crop",
+    description: "Human-centered design expert with award-winning portfolios.",
   },
   {
     id: "t4",
     name: "Prof. Daniel Kim",
     designation: "Cloud & DevOps Expert",
     image:
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
     description:
       "AWS, Kubernetes, and automation practitioner for large-scale systems.",
   },
@@ -65,7 +142,6 @@ const HomePage = () => {
   return (
     <div>
       <div className="min-h-screen flex flex-col bg-background">
-
         <main className="flex-1 ">
           {/* Hero Section */}
           <section className="relative overflow-hidden py-20 lg:py-32">
@@ -75,8 +151,6 @@ const HomePage = () => {
 
             <div className="container relative mx-auto">
               <div className="max-w-4xl mx-auto text-center space-y-8">
-               
-
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -121,10 +195,19 @@ const HomePage = () => {
                   className="flex items-center justify-center gap-6 pt-8"
                 >
                   <div className="flex -space-x-3">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div
+                    {[
+                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop&crop=face",
+                      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=600&fit=crop",
+                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=600&fit=crop",
+                    ].map((image, i) => (
+                      <Image
+                        width={40}
+                        height={40}
                         key={i}
-                        className="h-10 w-10 rounded-full border-2 border-background bg-linear-to-br from-primary to-accent"
+                        src={image}
+                        alt={`User ${i + 1}`}
+                        className="h-10 w-10 rounded-full border-2 border-background bg-linear-to-br from-primary to-accent object-cover"
                       />
                     ))}
                   </div>
@@ -179,8 +262,17 @@ const HomePage = () => {
                 </Button>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredCourses.map((course) => (
-                  <CourseCard key={course.id} {...course} onClick={() => {}} />
+                {featuredCourses.map((course, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.3, delay: index * 0.3 }}
+                  >
+                    <CourseCard href={`/courses/${course.id}`} {...course} onClick={() => {}} />
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -215,8 +307,12 @@ const HomePage = () => {
             <div className="container space-y-12 mx-auto">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-3xl lg:text-4xl font-bold font-display">Our Instructors</h2>
-                  <p className="text-muted-foreground mt-2">Learn from industry experts with proven experience</p>
+                  <h2 className="text-3xl lg:text-4xl font-bold font-display">
+                    Our Instructors
+                  </h2>
+                  <p className="text-muted-foreground mt-2">
+                    Learn from industry experts with proven experience
+                  </p>
                 </div>
                 <Button variant="outline" asChild>
                   <Link href="/instructors">
@@ -228,19 +324,31 @@ const HomePage = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {teachers.map((t, i) => (
                   <motion.div
-                    key={t.id}
+                     key={i}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: i * 0.1 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.3, delay: i * 0.3 }}
                     className="bg-card border border-border rounded-xl overflow-hidden shadow-sm"
                   >
-                    <div className="aspect-[4/3]">
-                      <img src={t.image} alt={t.name} className="h-full w-full object-cover" />
+                    <div className="aspect-4/3">
+                      <Image
+                        width={400}
+                        height={300}
+                        src={t.image}
+                        alt={t.name}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                     <div className="p-4 space-y-2">
                       <h3 className="font-semibold text-lg">{t.name}</h3>
-                      <p className="text-sm text-muted-foreground">{t.designation}</p>
-                      <p className="text-sm text-muted-foreground">{t.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {t.designation}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {t.description}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
@@ -248,8 +356,6 @@ const HomePage = () => {
             </div>
           </section>
         </main>
-
-       
       </div>
     </div>
   );
