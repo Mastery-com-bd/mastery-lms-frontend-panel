@@ -28,20 +28,22 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { href: "/courses", label: "Courses" },
-  { href: "/pricing", label: "Pricing" },
   { href: "/instructors", label: "Instructors" },
   { href: "/about", label: "About" },
+  { href: "/success", label: "Success" },
 ];
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const pathname = usePathname();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => pathname === path;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 backdrop-blur-xl bg-background/80">
@@ -99,54 +101,18 @@ export function Navbar() {
 
           {isLoggedIn ? (
             <>
-              {/* Notifications */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-destructive">
-                      3
-                    </Badge>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <div className="p-3 border-b border-border">
-                    <h4 className="font-semibold text-space-grotesk">Notifications</h4>
-                  </div>
-                  <div className="py-2">
-                    <DropdownMenuItem className="flex-col items-start gap-1 py-3">
-                      <p className="font-medium text-space-grotesk">New lesson available</p>
-                      <p className="text-xs text-muted-foreground">React Masterclass - Lesson 12</p>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="flex-col items-start gap-1 py-3">
-                      <p className="font-medium text-space-grotesk">Achievement unlocked!</p>
-                      <p className="text-xs text-muted-foreground">You&apos;ve completed 10 lessons</p>
-                    </DropdownMenuItem>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Messages */}
-              <Button variant="ghost" size="icon" className="relative" asChild>
-                <Link href="/chat">
-                  <MessageSquare className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
-                    2
-                  </Badge>
-                </Link>
-              </Button>
+              
 
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2 pl-2 pr-3 hover:bg-transparent hover:ring-2 ring-primary border border-gray-300">
+                  <Button variant="ghost" className="gap-2 pl-2 pr-3 hover:bg-transparent hover:ring-2 ring-primary border rounded-full border-gray-300">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face" alt="Demo User" />
                       <AvatarFallback className="bg-linear-to-br from-primary to-accent text-primary-foreground font-space-grotesk text-sm">
                         Bishal
                       </AvatarFallback>
                     </Avatar>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">

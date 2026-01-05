@@ -1,14 +1,12 @@
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
-import { Clock, Users, Star, Play, BookOpen } from "lucide-react";
+import { BookOpen, Clock, Play, Star, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { Progress } from "../ui/progress";
 import { Button } from "../ui/button";
-
+import { Progress } from "../ui/progress";
 
 interface CourseCardProps {
-  id: string;
   title: string;
   instructor: string;
   thumbnail: string;
@@ -22,6 +20,7 @@ interface CourseCardProps {
   isFeatured?: boolean;
   className?: string;
   onClick?: () => void;
+  href: string;
 }
 
 export function CourseCard({
@@ -38,16 +37,12 @@ export function CourseCard({
   isFeatured = false,
   className,
   onClick,
+  href,
 }: CourseCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3 }}
+    <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border bg-card shadow-md transition-all duration-300 hover:shadow-xl cursor-pointer",
-        isFeatured && "ring-2 ring-primary/50",
+        "group relative overflow-hidden rounded-2xl border border-border bg-card shadow-md transition-all duration-300 hover:shadow-xl cursor-pointer hover:ring-2 hover:ring-primary/50",
         className
       )}
       onClick={onClick}
@@ -63,13 +58,16 @@ export function CourseCard({
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-linear-to-t from-background/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        
+
         {/* Play Button Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <Link
+          href={`${href}`}
+          className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        >
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/90 text-primary-foreground shadow-glow backdrop-blur-sm">
             <Play className="h-6 w-6 ml-1" fill="currentColor" />
           </div>
-        </div>
+        </Link>
 
         {/* Featured Badge */}
         {isFeatured && (
@@ -79,7 +77,10 @@ export function CourseCard({
         )}
 
         {/* Category Badge */}
-        <Badge variant="secondary" className="absolute right-3 top-3 backdrop-blur-sm bg-background/80">
+        <Badge
+          variant="secondary"
+          className="absolute right-3 top-3 backdrop-blur-sm bg-background/80"
+        >
           {category}
         </Badge>
       </div>
@@ -125,9 +126,11 @@ export function CourseCard({
         {/* Price/Action */}
         <div className="flex items-center justify-between pt-2 border-t border-border">
           {isEnrolled ? (
-            <Button variant="default" size="sm" className="w-full gap-2">
-              <BookOpen className="h-4 w-4" />
-              Continue Learning
+            <Button asChild variant="default" size="sm" className="w-full gap-2">
+              <Link href={href} className="w-full">
+                <BookOpen className="h-4 w-4" />
+                Continue Learning
+              </Link>
             </Button>
           ) : (
             <>
@@ -135,7 +138,9 @@ export function CourseCard({
                 {price === 0 ? (
                   <span className="text-lg font-bold text-emerald">Free</span>
                 ) : (
-                  <span className="text-lg font-bold text-foreground">${price?.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-foreground">
+                    ${price?.toFixed(2)}
+                  </span>
                 )}
               </div>
               <Button variant="gradient" size="sm">
@@ -145,6 +150,6 @@ export function CourseCard({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
