@@ -6,8 +6,22 @@ import { Play, Star } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const HeroSection = () => {
+  useEffect(() => {
+    const getUser = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      console.log("HeroSection getUser:", data);
+    };
+    getUser();
+  }, []);
+
+
   return (
     <section className="overflow-hidden bg-background pb-12 lg:pb-20">
       <div className="container mx-auto px-4 md:px-6 ">
