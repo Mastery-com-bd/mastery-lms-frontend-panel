@@ -1,6 +1,12 @@
+import LoginPage from '@/components/auth/login/login'
+import React from 'react'
 
-const Page = () => {
-  return <div>login Page</div>;
-};
+const page = () => {
+  return (
+    <div>
+      <LoginPage />
+    </div>
+  )
+}
 
-export default Page;
+export default page
