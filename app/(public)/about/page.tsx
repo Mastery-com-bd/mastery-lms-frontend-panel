@@ -1,11 +1,8 @@
-import About from "@/components/about/about";
 
 const Page = () => {
   return (
-    <div>
-      <About />
-    </div>
-  );
-};
+    <div>about Page</div>
+  )
+}
 
-export default Page;
+export default Page
