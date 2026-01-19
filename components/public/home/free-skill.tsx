@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const FreeSkill = () => {
   return (
-    <section className="pt-20 mb-20 relative overflow-hidden bg-gray-50">
+    <section className="pt-20 relative overflow-hidden bg-gray-50">
       {/* Dotted pattern background */}
       <div
         className="absolute inset-0 z-0"

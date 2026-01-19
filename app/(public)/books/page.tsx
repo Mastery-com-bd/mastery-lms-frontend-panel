@@ -1,5 +1,4 @@
-import BookPage from '@/components/public/books/book-page'
-import React from 'react'
+import BookPage from "@/components/public/books/book-page"
 
 const Page = () => {
   return (
