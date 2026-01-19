@@ -70,9 +70,6 @@ export default function LoginPage() {
         return;
       }
 
-      // console.log("res", await res)
-      // console.log("res", await res.json().then((data) => data.message))
-
       toast.dismiss();
       showSuccess({message: await res.json().then((data) => data.message), duration: 5000});
       router.push("/");

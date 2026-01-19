@@ -55,12 +55,34 @@ const BenefitsSection = () => {
   return (
     <section className="py-20 relative overflow-hidden">
       {/* Decorative Icons */}
-      <div className="absolute top-20 left-10 lg:left-20 animate-bounce transition-all duration-1000">
-        <span className="text-6xl">🌍</span>
-      </div>
-      <div className="absolute top-20 right-10 lg:right-20 animate-pulse transition-all duration-1000">
-        <span className="text-6xl">📚</span>
-      </div>
+      <motion.div
+        className="absolute top-20 left-10 lg:left-20"
+        animate={{ y: [0, -20, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span className="">
+          <Image
+            src="/icons/World Illustration.png"
+            alt="Books Icon"
+            width={144}
+            height={144}
+          />
+        </span>
+      </motion.div>
+      <motion.div
+        className="absolute top-20 right-10 lg:right-20"
+        animate={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <span className="">
+          <Image
+            src="/icons/Book Illustration.png"
+            alt="Books Icon"
+            width={144}
+            height={144}
+          />
+        </span>
+      </motion.div>
 
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl lg:text-4xl font-bold  mb-12">
