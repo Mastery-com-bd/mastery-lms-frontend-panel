@@ -23,7 +23,7 @@ const HeroSection = () => {
 
 
   return (
-    <section className="overflow-hidden bg-background pb-12 lg:pb-20">
+    <section className="overflow-hidden pb-12 lg:pb-20">
       <div className="container mx-auto px-4 md:px-6 ">
         <div className="relative grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}

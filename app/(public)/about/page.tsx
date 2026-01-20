@@ -1,8 +1,11 @@
+import AboutPage from "@/components/public/about/about-page";
 
 const Page = () => {
   return (
-    <div>about Page</div>
-  )
-}
+    <div>
+      <AboutPage />
+    </div>
+  );
+};
 
-export default Page
+export default Page;

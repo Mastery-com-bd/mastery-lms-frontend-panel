@@ -21,7 +21,7 @@ const BookCardV2 = ({
   currency = "BDT",
 }: BookCardProps) => {
   return (
-    <div className="group relative w-full max-w-160 bg-white rounded-[4rem] p-6 transition-all duration-500 hover:shadow-[0_40px_100px_rgba(204,0,0,0.15)] border border-transparent hover:border-gray-100 flex flex-col h-full overflow-hidden">
+    <div className="group relative w-full max-w-160 bg-white rounded-[4rem] p-6 transition-all duration-500 hover:shadow-[0_40px_100px_rgba(204,0,0,0.15)] border border-border hover:border-gray-100 flex flex-col h-full overflow-hidden">
       {/* Top Section: Image & Interactive Layer */}
       <div className="relative aspect-4/5 w-full overflow-hidden rounded-[3rem] bg-[#fdfdfd] flex items-center justify-center">
         {/* Modern Sale Badge */}

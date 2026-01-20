@@ -21,7 +21,7 @@ const BookCard = ({
   currency = "BDT",
 }: BookCardProps) => {
   return (
-    <div className="group relative w-full max-w-[320px] bg-white rounded-[2rem] p-3 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(204,0,0,0.12)] border border-transparent hover:border-gray-100 flex flex-col h-full overflow-hidden">
+    <div className="group relative w-full max-w-[320px] bg-white rounded-[2rem] p-3 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(204,0,0,0.12)] border border-border hover:border-gray-100 flex flex-col h-full overflow-hidden">
       {/* Top Section: Image & Interactive Layer */}
       <div className="relative aspect-4/5 w-full overflow-hidden rounded-[1.5rem] bg-[#fdfdfd] flex items-center justify-center">
        
