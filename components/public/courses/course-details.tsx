@@ -28,6 +28,7 @@ import {
   Users,
 } from "lucide-react";
 import Image from "next/image";
+import RelatedCourses from "./related-courses";
 
 const CourseDetails = () => {
   const copyToClipboard = (text: string) => {
@@ -111,7 +112,7 @@ const CourseDetails = () => {
               </TabsContent>
 
               <TabsContent value="curriculum">
-                <Accordion type="single" collapsible className="space-y-4">
+                <Accordion type="single" collapsible className="space-y-4 my-4">
                   {[1, 2, 3, 4].map((section) => (
                     <AccordionItem
                       key={section}
@@ -328,6 +329,9 @@ const CourseDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Related Courses */}
+      <RelatedCourses />
     </div>
   );
 };
