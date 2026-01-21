@@ -53,7 +53,7 @@ const BenefitsSection = () => {
   const [activeTab, setActiveTab] = useState("Course");
 
   return (
-    <section className="py-20 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden bg-background">
       {/* Decorative Icons */}
       <motion.div
         className="absolute top-20 left-10 lg:left-20"

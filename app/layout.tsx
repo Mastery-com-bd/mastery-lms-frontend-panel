@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-white`}
       >
         {children}
         <Toaster position="top-center" />

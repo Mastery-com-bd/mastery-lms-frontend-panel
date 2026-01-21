@@ -5,6 +5,8 @@ import PaginatioComponent from "@/components/shared/pagination";
 import CourseSupport from "./course-support";
 import RelatedCourses from "../related-courses";
 import StudentFeedback from "./student-feedback";
+import CourseInstractor from "./course-instractor";
+import CourseOffer from "./course-offer";
 
 const AllCoueses = () => {
   return (
@@ -51,6 +53,16 @@ const AllCoueses = () => {
       {/* Student Feedback */}
       <div className="">
         <StudentFeedback />
+      </div>
+
+      {/* Course Instructor */}
+      <div className="px-5">
+        <CourseInstractor />
+      </div>
+
+      {/* Course Offer */}
+      <div className="px-5">
+        <CourseOffer />
       </div>
     </div>
   );
