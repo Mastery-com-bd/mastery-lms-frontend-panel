@@ -1,5 +1,5 @@
 export const getFeaturedCourse = async ({page}: {page: number}) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses/featured?page=${page}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/courses/featured?page=${page}`);
   const data = await res.json();
   console.log("Data From Data Layer ", data)
   return data;
@@ -23,6 +23,12 @@ export const getAllProducts = async (params: {
   });
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/product?${queryParams.toString()}`);
+  const data = await res.json();
+  return data;
+};
+
+export const getCourseById = async (id: string) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/course/${id}`);
   const data = await res.json();
   return data;
 };
