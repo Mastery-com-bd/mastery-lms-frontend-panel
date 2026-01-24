@@ -26,14 +26,14 @@ const AllCourseCard = ({
   return (
     <div className="group bg-white overflow-hidden border border-gray-100 flex flex-col h-full transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
       {/* Course Image */}
-      <div className="relative aspect-4/3 w-full overflow-hidden">
+      <Link href={`/courses/${id}`} className="relative aspect-4/3 w-full overflow-hidden">
         <Image
           src={image}
           alt={title}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-      </div>
+      </Link>
 
       {/* Course Content */}
       <div className="p-5 flex flex-col flex-1 gap-4">

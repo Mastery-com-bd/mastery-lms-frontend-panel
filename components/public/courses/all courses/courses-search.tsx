@@ -10,16 +10,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-const CoursesSearch = () => {
+interface QueryType {
+  query: string;
+  filter: {
+    subject: string;
+    category: string;
+    language: string;
+    sort: string;
+  };
+}
+
+const CoursesSearch = ({ setQuery }: { setQuery: (query: QueryType) => void }) => {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
     subject: "",
     category: "",
     language: "",
-    availability: "",
-    learningType: "",
     sort: "newest",
   });
 
@@ -27,6 +35,10 @@ const CoursesSearch = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (search || Object.values(filters).some(v => v !== "" && v !== "newest")) {
+        setQuery({
+          query: search,
+          filter: filters,
+        });
         console.log("🔍 Search Updated:", {
           query: search,
           filters: filters,
@@ -36,7 +48,7 @@ const CoursesSearch = () => {
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [search, filters]);
+  }, [search, filters,]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -74,13 +86,13 @@ const CoursesSearch = () => {
           </div>
 
           {/* Filter Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="flex items-center justify-center gap-3">
             {[
               { key: "subject", label: "Subject", options: ["Math", "Science", "Arts", "Business"] },
-              { key: "category", label: "Category", options: ["Design", "Development", "Marketing"] },
-              { key: "language", label: "Language", options: ["English", "Bengali", "Spanish"] },
-              { key: "availability", label: "Availability", options: ["All", "Available", "Upcoming"] },
-              { key: "learningType", label: "Learning Type", options: ["Online", "Offline", "Hybrid"] },
+              // { key: "category", label: "Category", options: ["Design", "Development", "Marketing"] },
+              { key: "language", label: "Language", options: ["ENGLISH", "BENGALI", "SPANISH"] },
+              // { key: "availability", label: "Availability", options: ["All", "Available", "Upcoming"] },
+              // { key: "learningType", label: "Learning Type", options: ["Online", "Offline", "Hybrid"] },
             ].map((filter) => (
               <Select
                 key={filter.key}
@@ -93,7 +105,7 @@ const CoursesSearch = () => {
                   {filter.options.map((opt) => (
                     <SelectItem 
                       key={opt} 
-                      value={opt.toLowerCase()}
+                      value={opt.toUpperCase()}
                       className="py-3 px-4 font-medium focus:bg-[#fff1f1] focus:text-[#CC0000] cursor-pointer"
                     >
                       {opt}
