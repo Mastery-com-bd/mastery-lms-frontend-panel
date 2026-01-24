@@ -1,24 +1,24 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { useEffect, useState } from "react";
 
-const InstructorCard = ({ name, image, bio }: { name: string; image: string; bio: string }) => {
+const InstructorCard = ({ fullName, profilePhoto, bio }: { fullName: string; profilePhoto: string; bio: string }) => {
   return (
     <div className="relative pt-24">
       <div className="bg-white p-8 pt-32 text-center shadow-[0_5px_10px_rgba(0,0,0,0.3)] transition-all duration-500">
         {/* Overlapping Image */}
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-64 h-64 shadow-2xl transition-transform duration-700">
           <Image
-            src={image}
-            alt={name}
+            src={profilePhoto}
+            alt={fullName}
             fill
             className="object-cover"
           />
         </div>
         
-        <div className="space-y-4 max-w-[280px] mx-auto mt-5">
-          <h3 className="text-2xl font-bold text-[#1e1b4b] tracking-tight">{name}</h3>
+        <div className="space-y-4 max-w-70 mx-auto mt-5">
+          <h3 className="text-2xl font-bold text-[#1e1b4b] tracking-tight">{fullName}</h3>
           <p className="text-[#64748b] leading-relaxed text-base font-medium">
             {bio}
           </p>
@@ -28,8 +28,18 @@ const InstructorCard = ({ name, image, bio }: { name: string; image: string; bio
   );
 };
 
+interface InstructorProps {
+  id: string;
+  profilePhoto: string;
+  fullName: string;
+  bio: string;
+}
+
 const CourseInstractor = () => {
-  const instructors = [
+
+  const [instractor, setInstructors] = useState<InstructorProps[]>([])
+
+/*   const instructors = [
     {
       name: "Jane Cooper",
       image: "/instractor/instractor1.png",
@@ -60,7 +70,26 @@ const CourseInstractor = () => {
       image: "/instractor/instractor1.png",
       bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
     },
-  ];
+  ]; */
+
+   useEffect(() => {
+      const getUser = async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/user/instructors`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const { data, meta } = await res.json();
+        setInstructors(data)
+        // setInstructors(data);
+        // setMeta({
+        //   limit: meta?.limit || 0,
+        //   total: meta?.total || 0,
+        //   page: meta?.page || 0,
+        // });
+        console.log("Instructors:", data, meta);
+      };
+      getUser();
+    }, []);
 
   return (
     <section className="py-16 bg-white">
@@ -79,7 +108,7 @@ const CourseInstractor = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {instructors.map((instructor, index) => (
+          {instractor.map((instructor, index) => (
             <InstructorCard key={index} {...instructor} />
           ))}
         </div>

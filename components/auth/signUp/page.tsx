@@ -89,20 +89,20 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div className="max-w-[1920px] mx-auto max-h-screen h-full flex items-center">
       {/* Brand Panel */}
-      <div className="w-full h-full z-20 flex items-center text-lg font-medium">
-        <Image
-          src="/auth/signUp-Illustrations.png"
-          alt="Logo"
-          width={800}
-          height={2000}
-          className="w-full h-full object-contain"
-        />
-      </div>
+      <div className="w-1/2 max-h-[calc(100vh-81px)] z-20 flex items-center justify-center text-lg font-medium bg-primary">
+              <Image
+                src="/auth/SignUp.png"
+                alt="Logo"
+                width={800}
+                height={2000}
+                className="w-full h-full object-contain"
+              />
+            </div>
 
       {/* Register Form Panel */}
-      <div className="w-1/2 lg:p-8">
+      <div className="lg:p-8 w-1/2">
         <div className="mx-auto flex w-full flex-col justify-center space-y-2 sm:w-150">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-[40px] font-semibold leading-12 text-[#1a1a1a]">

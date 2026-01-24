@@ -83,10 +83,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-360 max-h-screen h-full flex items-center">
+    <div className="max-w-360 mx-auto max-h-screen h-full flex items-center">
       <div className="w-1/2 z-20 flex items-center text-lg font-medium">
         <Image
-          src="/auth/login-Illustrations.png"
+          src="/auth/login.png"
           alt="Logo"
           width={800}
           height={2000}

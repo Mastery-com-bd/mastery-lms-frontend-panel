@@ -18,7 +18,7 @@ const BookCardV4 = ({
   currency = "BDT",
 }: BookCardV4Props) => {
   return (
-    <div className="max-w-95 bg-white rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 flex flex-col p-5 relative group">
+    <div className="w-full max-w-95 mx-auto bg-white overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 flex flex-col p-5 relative group">
       {/* Yellow Sale Ribbon */}
       <div className="absolute top-0 right-5 z-10">
         <div className="bg-[#FFD700] text-[#1a1a1a] font-bold px-3 py-4 rounded-b-sm shadow-sm text-sm relative">

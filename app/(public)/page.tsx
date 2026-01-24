@@ -15,7 +15,7 @@ const Page = () => {
       <BenefitsSection />
       <ExploreCourse />
       <SocialProve />
-      <NewsLetter />
+      {/* <NewsLetter /> */}
       <Testimonials />
       <FaqSection />
       <DownloadApp />
