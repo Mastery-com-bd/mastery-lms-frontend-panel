@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { showSuccess } from "@/lib/toast";
+import { showError, showLoading, showSuccess } from "@/lib/toast";
 import {
   BarChart,
   BookOpen,
@@ -29,14 +29,96 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import RelatedCourses from "./related-courses";
+import { useEffect, useState } from "react";
+import { getCourseById } from "@/lib/data-layer/public";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-const CourseDetails = () => {
+interface Lesson {
+  id: string;
+  title: string;
+  duration: number | null;
+  isPreview: boolean;
+}
+
+interface Section {
+  id: string;
+  title: string;
+  description: string;
+  lessons: Lesson[];
+}
+
+interface CourseData {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  thumbnail: string;
+  price: number;
+  discountPrice: number;
+  language: string;
+  level: string;
+  duration: string | null;
+  totalLessons: number;
+  enrolledCount: number;
+  averageRating: number;
+  category: { name: string };
+  sections: Section[];
+}
+
+const CourseDetails = ({ id }: { id: string }) => {
+  const [course, setCourse] = useState<CourseData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await getCourseById(id);
+        if (response.success) {
+          setCourse(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching course:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourse();
+  }, [id]);
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     showSuccess({
       message: "Link copied to clipboard",
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-[#CC0000] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl text-gray-500">Course not found.</p>
+      </div>
+    );
+  }
+
+  const discountPercentage = course.discountPrice
+    ? Math.round(((course.price - course.discountPrice) / course.price) * 100)
+    : 0;
+
+    
+
+    const handleWishList = (courseId: string) => {
+      console.log(courseId)
+    }
 
   return (
     <div className="bg-white min-h-screen pb-20">
@@ -46,18 +128,21 @@ const CourseDetails = () => {
           <div className="flex-1 lg:w-2/3">
             <nav className="text-sm text-gray-500 mb-4 flex gap-2">
               <span>Home</span> / <span>Courses</span> /{" "}
-              <span className="text-[#CC0000]">Course Details</span>
+              <span className="text-[#CC0000]">{course.category.name}</span>
             </nav>
 
             <h1 className="text-3xl md:text-4xl font-bold text-[#1a1a1a] mb-6">
-              Mastering Modern Web Development: From Zero to Hero
+              {course.title}
             </h1>
 
             {/* Video Preview */}
             <div className="relative aspect-video w-full rounded-2xl overflow-hidden mb-8 bg-gray-100 group cursor-pointer">
               <Image
-                src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200"
-                alt="Course Preview"
+                src={
+                  course.thumbnail ||
+                  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200"
+                }
+                alt={course.title}
                 fill
                 className="object-cover"
               />
@@ -85,12 +170,10 @@ const CourseDetails = () => {
               <TabsContent value="overview" className="space-y-12">
                 <div className="prose max-w-none">
                   <h3 className="text-2xl font-bold mb-4">Description</h3>
-                  <p className="text-gray-600 leading-relaxed text-lg">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </p>
+                  <div
+                    className="text-gray-600 leading-relaxed text-lg"
+                    dangerouslySetInnerHTML={{ __html: course.description }}
+                  />
                 </div>
 
                 <div className="bg-green-50/50 border border-green-100 rounded-2xl p-8">
@@ -98,12 +181,12 @@ const CourseDetails = () => {
                     What you will learn in this course
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Map actual learning points if available in API, otherwise keep placeholders */}
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                       <div key={i} className="flex items-start gap-3">
                         <CheckCircle2 className="w-5 h-5 text-green-500 mt-1 shrink-0" />
                         <span className="text-gray-700">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit.
+                          Comprehensive mastery of {course.title} concepts.
                         </span>
                       </div>
                     ))}
@@ -113,35 +196,39 @@ const CourseDetails = () => {
 
               <TabsContent value="curriculum">
                 <Accordion type="single" collapsible className="space-y-4 my-4">
-                  {[1, 2, 3, 4].map((section) => (
+                  {course.sections.map((section) => (
                     <AccordionItem
-                      key={section}
-                      value={`section-${section}`}
+                      key={section.id}
+                      value={section.id}
                       className="border rounded-xl px-4"
                     >
                       <AccordionTrigger className="hover:no-underline py-6">
                         <div className="flex justify-between w-full pr-4">
-                          <span className="font-bold text-lg">
-                            Section {section}: Getting Started
+                          <span className="font-bold text-lg text-left">
+                            {section.title}
                           </span>
-                          <span className="text-gray-500 text-sm">
-                            5 Lectures • 45 min
+                          <span className="text-gray-500 text-sm shrink-0 ml-4">
+                            {section.lessons.length} Lectures
                           </span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="space-y-4 pb-6">
-                        {[1, 2, 3].map((lesson) => (
+                        {section.lessons.map((lesson) => (
                           <div
-                            key={lesson}
+                            key={lesson.id}
                             className="flex items-center justify-between py-2 border-t first:border-0"
                           >
                             <div className="flex items-center gap-3">
                               <PlayCircle className="w-4 h-4 text-gray-400" />
                               <span className="text-gray-600">
-                                Lesson {lesson}: Introduction to the topic
+                                {lesson.title}
                               </span>
                             </div>
-                            <span className="text-gray-400 text-sm">12:30</span>
+                            <span className="text-gray-400 text-sm">
+                              {lesson.duration
+                                ? `${lesson.duration} min`
+                                : "---"}
+                            </span>
                           </div>
                         ))}
                       </AccordionContent>
@@ -159,40 +246,50 @@ const CourseDetails = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-4">
                   <span className="text-5xl font-black text-[#1a1a1a]">
-                    $14.00
+                    ${course.discountPrice || course.price}
                   </span>
-                  <span className="text-gray-300 line-through text-xl font-medium">
-                    $26.00
-                  </span>
-                  <span className="bg-[#fff1f1] text-[#CC0000] px-3 py-1 rounded text-sm font-bold ml-auto">
-                    56% OFF
-                  </span>
+                  {course.discountPrice && (
+                    <span className="text-gray-300 line-through text-xl font-medium">
+                      ${course.price}
+                    </span>
+                  )}
+                  {discountPercentage > 0 && (
+                    <span className="bg-[#fff1f1] text-[#CC0000] px-3 py-1 rounded text-sm font-bold ml-auto">
+                      {discountPercentage}% OFF
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 text-[#CC0000] text-sm font-bold">
-                  <Clock className="w-4 h-4" />
-                  <span>2 days left at this price!</span>
-                </div>
+                {course.discountPrice && (
+                  <div className="flex items-center gap-2 text-[#CC0000] text-sm font-bold">
+                    <Clock className="w-4 h-4" />
+                    <span>Special price for a limited time!</span>
+                  </div>
+                )}
               </div>
 
               {/* Course Metadata */}
               <div className="space-y-5 pt-4 border-t border-gray-50">
                 {[
-                  { icon: Clock, label: "Course Duration", value: "6 Month" },
+                  {
+                    icon: Clock,
+                    label: "Course Duration",
+                    value: course.duration || "",
+                  },
                   {
                     icon: BarChart,
                     label: "Course Level",
-                    value: "Beginner and Intermediate",
+                    value: course.level,
                   },
                   {
                     icon: Users,
                     label: "Students Enrolled",
-                    value: "69,419,618",
+                    value: course.enrolledCount.toLocaleString(),
                   },
-                  { icon: BookOpen, label: "Language", value: "Bengali" },
+                  { icon: BookOpen, label: "Language", value: course.language },
                   {
                     icon: Calendar,
-                    label: "Subtitle Language",
-                    value: "English",
+                    label: "Total Lessons",
+                    value: course.totalLessons,
                   },
                 ].map((item, idx) => (
                   <div
@@ -205,7 +302,7 @@ const CourseDetails = () => {
                         {item.label}
                       </span>
                     </div>
-                    <span className="text-gray-400 font-medium">
+                    <span className="text-gray-400 font-medium capitalize">
                       {item.value}
                     </span>
                   </div>
@@ -214,11 +311,8 @@ const CourseDetails = () => {
 
               {/* Action Buttons */}
               <div className="space-y-4">
-                <Button className="w-full bg-[#CC0000] hover:bg-[#B30000] h-16 text-xl font-bold rounded-2xl shadow-lg shadow-red-100 transition-all active:scale-95">
-                  Enroll Now
-                </Button>
-                <Button className="w-full bg-[#fff1f1] hover:bg-[#ffe4e4] text-[#CC0000] h-16 text-xl font-bold rounded-2xl transition-all border-none">
-                  Add To Cart
+                <Button onClick={() => router.push(`/checkout?id=${id}`)} className="w-full bg-[#CC0000] hover:bg-[#B30000] h-16 text-xl font-bold rounded-2xl shadow-lg shadow-red-100 transition-all active:scale-95">
+                  {loading ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : null} {loading ? "Enrolling..." : "Enroll Now"}
                 </Button>
 
                 <div className="grid grid-cols-2 gap-4">
