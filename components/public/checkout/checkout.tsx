@@ -1,13 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,56 +9,101 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { showError, showLoading } from "@/lib/toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
 
 const checkoutSchema = z.object({
-  customer_name: z.string().min(1, "Full name is required"),
-  customer_email: z.string().email("Invalid email address"),
-  customer_phone: z.string().min(1, "Phone number is required"),
-  customer_address: z.string().min(1, "Address is required"),
-  customer_city: z.string().min(1, "City is required"),
+  customerName: z.string().min(1, "Full name is required"),
+  customerEmail: z.string().email("Invalid email address"),
+  customerPhone: z.string().min(1, "Phone number is required"),
+  customerAddress: z.string().min(1, "Address is required"),
+  customerCity: z.string().min(1, "City is required"),
   couponCode: z.string().optional(),
 });
 
 const Checkout = ({ courseId }: { courseId: string }) => {
+  const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
+  const [course, setCourse] = React.useState<{
+    id: string;
+    price: number;
+    discountPrice: number;
+  } | null>(null);
 
-    const router = useRouter();
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/course/${courseId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setCourse(data.data);
+        console.log("Course Data: ", data.data);
+      });
+  }, [courseId]);
 
-    if(!courseId) {
-        router.push("/");
-    }
+  if (!courseId) {
+    router.push("/");
+  }
+
+
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      customer_name: "",
-      customer_email: "",
-      customer_phone: "",
-      customer_address: "",
-      customer_city: "",
+      customerName: "",
+      customerEmail: "",
+      customerPhone: "",
+      customerAddress: "",
+      customerCity: "",
       couponCode: "",
     },
   });
 
-  useEffect(() => {
-    const getUser = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`, {
-        method: "GET",
+  const onSubmit = async (values: z.infer<typeof checkoutSchema>) => {
+    showLoading("Processing payment...");
+    setLoading(true);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/payment/enrollment`, {
+        method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ courseId, ...values }),
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          console.log("First Request: ",data)
+          await fetch(
+            `${process.env.NEXT_PUBLIC_SERVER_URL}/payment/surjopay/${data.data.id}`,
+            {
+              method: "POST",
+              credentials: "include",
+              body: JSON.stringify(values),
+            },
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data)
+              router.push(data.data.checkout_url);
+            });
+        });
+    } catch (error) {
+      console.log(error);
+      toast.dismiss();
+      setLoading(false);
+      showError({
+        message:
+          error instanceof Error
+            ? error.message
+            : "An error occurred. Please try again.",
       });
-      const data = await res.json();
-
-      if(!data.success) {
-        router.push("/login");
-      }
-
-    };
-    getUser();
-    
-  }, [router]);
-
-  const onSubmit = (values: z.infer<typeof checkoutSchema>) => {
-    console.log("Checkout data:", values);
+    }
   };
 
   return (
@@ -100,7 +139,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="customer_name"
+                      name="customerName"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -116,7 +155,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                     />
                     <FormField
                       control={form.control}
-                      name="customer_email"
+                      name="customerEmail"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -133,7 +172,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                     />
                     <FormField
                       control={form.control}
-                      name="customer_phone"
+                      name="customerPhone"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -149,7 +188,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                     />
                     <FormField
                       control={form.control}
-                      name="customer_city"
+                      name="customerCity"
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
@@ -166,7 +205,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                   </div>
                   <FormField
                     control={form.control}
-                    name="customer_address"
+                    name="customerAddress"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -206,9 +245,11 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                         Math with practical game-play
                       </h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-[#CC0000] font-bold">$32.00</span>
-                        <span className="text-gray-300 line-through text-sm">
-                          $62.00
+                        <span className="text-[#CC0000] font-bold">
+                          ৳{course?.discountPrice}
+                        </span>
+                        <span className="text-gray-500 line-through text-sm">
+                          ৳{course?.price}
                         </span>
                       </div>
                     </div>
@@ -238,6 +279,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                       />
                       <Button
                         type="button"
+                        disabled={loading}
                         onClick={() =>
                           console.log(
                             "Applying coupon:",
@@ -265,12 +307,24 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                   <div className="space-y-4">
                     <div className="flex justify-between text-gray-500 font-medium">
                       <span>Subtotal</span>
-                      <span className="text-[#1a1a1a]">$61.97 BDT</span>
+                      {course?.discountPrice ? (
+                        <span className="text-[#1a1a1a] relative">
+                          ৳{course.price} BDT
+                          <span className="absolute left-0 top-1/2 w-full h-[2px] bg-gray-400 rotate-[-12deg]"></span>
+                        </span>
+                      ) : (
+                        <span className="text-[#1a1a1a]">
+                          ৳{course?.price} BDT
+                        </span>
+                      )}
+                      <span className="text-[#1a1a1a]">
+                        ৳{course?.discountPrice ? course?.discountPrice : course?.price} BDT
+                      </span>
                     </div>
-                    <div className="flex justify-between text-gray-500 font-medium">
+                    {/* <div className="flex justify-between text-gray-500 font-medium">
                       <span>Coupon Discount</span>
                       <span className="text-[#1a1a1a]">8%</span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="pt-6 border-t border-gray-50 flex justify-between items-baseline">
@@ -278,7 +332,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                       Total:
                     </span>
                     <span className="text-3xl font-black text-[#1a1a1a]">
-                      $75.00 USD
+                      ৳{course?.discountPrice ? course?.discountPrice : course?.price} BDT
                     </span>
                   </div>
 
@@ -293,6 +347,7 @@ const Checkout = ({ courseId }: { courseId: string }) => {
                     </div>
                     <Button
                       type="submit"
+                      disabled={loading}
                       className="w-full h-14 bg-[#CC0000] hover:bg-[#B30000] text-white font-bold text-lg rounded-none shadow-lg shadow-red-100 transition-all active:scale-[0.98]"
                     >
                       Complete Payment

@@ -318,13 +318,13 @@ const CourseDetails = ({ id }: { id: string }) => {
                 <div className="grid grid-cols-2 gap-4">
                   <Button
                     variant="outline"
-                    className="h-12 font-bold border-gray-100 rounded-xl text-gray-600 hover:bg-gray-50"
+                    className="h-12 font-bold rounded-xl text-gray-600"
                   >
                     Add To Wishlist
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-12 font-bold border-gray-100 rounded-xl text-gray-600 hover:bg-gray-50"
+                    className="h-12 font-bold rounded-xl text-gray-600"
                   >
                     Gift Course
                   </Button>
