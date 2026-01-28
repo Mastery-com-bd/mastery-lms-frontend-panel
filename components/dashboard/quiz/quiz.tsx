@@ -15,7 +15,7 @@ export default function Quiz() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <main className="flex-1 container mx-auto px-4 py-8">
         <QuizSystem onComplete={handleComplete} onClose={handleClose} />
       </main>

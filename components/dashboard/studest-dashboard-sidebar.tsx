@@ -3,6 +3,7 @@
 import {
   BookOpen,
   FileQuestion,
+  Heart,
   LayoutDashboard,
   LucideIcon,
   Search,
@@ -43,6 +44,44 @@ const SidebarItem = ({
   );
 };
 
+const sidebarRoutes = [
+  {
+    icon: LayoutDashboard,
+    label: "Dashboard",
+    href: "/dashboard",
+  },
+  {
+    icon: BookOpen,
+    label: "My Courses",
+    href: "/dashboard/my-courses",
+  },
+  {
+    icon: Heart,
+    label: "Wishlist",
+    href: "/dashboard/wishlist",
+  },
+  {
+    icon: FileQuestion,
+    label: "Quiz System",
+    href: "/dashboard/quiz",
+  },
+  {
+    icon: Users,
+    label: "Live Classes",
+    href: "/dashboard/live-class",
+  },
+  {
+    icon: User,
+    label: "Profile",
+    href: "/dashboard/profile",
+  },
+  {
+    icon: Settings,
+    label: "Settings",
+    href: "/dashboard/settings",
+  },
+];
+
 const StudentDashboardSidebar = () => {
   const currentPath = usePathname();
   return (
@@ -62,43 +101,16 @@ const StudentDashboardSidebar = () => {
           />
         </div>
 
-        <nav className="space-y-1 flex-1">
-          <SidebarItem
-            icon={LayoutDashboard}
-            label="Dashboard"
-            href="/dashboard"
-            isActive={currentPath === "/dashboard"}
-          />
-          <SidebarItem
-            icon={BookOpen}
-            label="My Courses"
-            href="/dashboard/my-courses"
-            isActive={currentPath === "/dashboard/my-courses"}
-          />
-          <SidebarItem
-            icon={FileQuestion}
-            label="Quiz System"
-            href="/dashboard/quiz"
-            isActive={currentPath === "/dashboard/quiz"}
-          />
-          <SidebarItem
-            icon={Users}
-            label="Live Classes"
-            href="/dashboard/live-class"
-            isActive={currentPath === "/dashboard/live-class"}
-          />
-          <SidebarItem
-            icon={User}
-            label="profile"
-            href="/dashboard/profile"
-            isActive={currentPath === "/dashboard/profile"}
-          />
-          <SidebarItem
-            icon={Settings}
-            label="Settings"
-            href="/dashboard/settings"
-            isActive={currentPath === "/dashboard/settings"}
-          />
+        <nav className="space-y-1.5 flex-1">
+          {sidebarRoutes.map((route) => (
+            <SidebarItem
+              key={route.href}
+              icon={route.icon}
+              label={route.label}
+              href={route.href}
+              isActive={currentPath === route.href}
+            />
+          ))}
         </nav>
       </aside>
     </div>

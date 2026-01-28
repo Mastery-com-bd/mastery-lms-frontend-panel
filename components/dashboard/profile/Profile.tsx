@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,28 @@ import {
   Target,
   Zap,
   PlayCircle,
+  CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+
+interface UserProfile {
+  id: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string | null;
+  profilePhoto: string | null;
+  address: string | null;
+  bio: string | null;
+  role: string;
+  gender: string | null;
+  dateOfBirth: string | null;
+  status: string;
+  isEmailVerified: boolean;
+  createdAt: string;
+}
 
 const enrolledCourses = [
   {
@@ -104,8 +123,54 @@ const certificates = [
 ];
 
 export default function Profile() {
+  const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          },
+        );
+        const result = await response.json();
+        if (result.success) {
+          setUserInfo(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+      </div>
+    );
+  }
+
+  if (!userInfo) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <p className="text-muted-foreground">Failed to load profile.</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <main className="container mx-auto px-4 py-8">
         {/* Profile Header */}
         <Card className="bg-card border-border overflow-hidden mb-8 pt-0">
@@ -113,19 +178,19 @@ export default function Profile() {
           <CardContent className="relative pt-0">
             <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-12">
               <Avatar className="w-24 h-24 border-4 border-background">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                  JD
+                <AvatarImage src={userInfo.profilePhoto || ""} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-2xl uppercase">
+                  {userInfo.fullName.substring(0, 2)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div>
                     <h1 className="text-2xl font-display font-bold text-foreground">
-                      John Doe
+                      {userInfo.fullName}
                     </h1>
                     <p className="text-muted-foreground">
-                      Full Stack Developer | Lifelong Learner
+                      {userInfo.bio || `${userInfo.role} | Lifelong Learner`}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -147,121 +212,163 @@ export default function Profile() {
             <div className="flex flex-wrap items-center gap-4 mt-6 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
-                San Francisco, CA
+                {userInfo.address || "Not specified"}
               </span>
               <span className="flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
-                Joined January 2024
+                Joined {new Date(userInfo.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 lowercase">
                 <LinkIcon className="w-4 h-4" />
-                johndoe.dev
+                {userInfo.email}
               </span>
             </div>
           </CardContent>
         </Card>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Courses Enrolled", value: "8", icon: BookOpen },
-            { label: "Hours Learned", value: "124", icon: Clock },
-            { label: "Certificates", value: "3", icon: Award },
-            { label: "Current Streak", value: "12 days", icon: Flame },
+            {
+              label: "Enrolled Courses",
+              value: "957",
+              icon: PlayCircle,
+              bgColor: "bg-[#FFF0EB]",
+              iconColor: "text-red-600",
+            },
+            {
+              label: "Active Courses",
+              value: "6",
+              icon: BookOpen,
+              bgColor: "bg-[#EBEBFF]",
+              iconColor: "text-indigo-600",
+            },
+            {
+              label: "Completed Courses",
+              value: "951",
+              icon: CheckCircle2,
+              bgColor: "bg-[#EBF9EB]",
+              iconColor: "text-green-600",
+            },
+            {
+              label: "Certificates",
+              value: "7",
+              icon: Award,
+              bgColor: "bg-[#F9EBEB]",
+              iconColor: "text-red-700",
+            },
           ].map((stat) => (
-            <Card key={stat.label} className="bg-card border-border">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <stat.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">
-                      {stat.value}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {stat.label}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div
+              key={stat.label}
+              className={`${stat.bgColor} p-6 flex items-center gap-5 rounded-none`}
+            >
+              <div className="w-14 h-14 bg-white flex items-center justify-center shrink-0">
+                <stat.icon className={`w-7 h-7 ${stat.iconColor}`} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground leading-tight">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {stat.label}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="courses" className="space-y-6">
-          <TabsList className="bg-card border border-border">
-            <TabsTrigger value="courses">My Courses</TabsTrigger>
-            <TabsTrigger value="achievements">Achievements</TabsTrigger>
-            <TabsTrigger value="certificates">Certificates</TabsTrigger>
+        <Tabs defaultValue="courses" className="space-y-8">
+          <TabsList className="max-w-150 bg-transparent  w-full justify-start h-auto p-0 gap-8 rounded-none">
+            <TabsTrigger
+              value="courses"
+              className="data-[state=active]:bg-transparent focus:outline-none data-[state=active]:shadow-none data-[state=active]:border-t-0 data-[state=active]:border-r-0 data-[state=active]:border-l-0 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 text-lg font-bold transition-all"
+            >
+              My Courses
+            </TabsTrigger>
+            <TabsTrigger
+              value="certificates"
+              className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 text-lg font-bold transition-all"
+            >
+              Certificates
+            </TabsTrigger>
+            
           </TabsList>
 
           {/* Courses Tab */}
-          <TabsContent value="courses" className="space-y-4">
+          <TabsContent value="courses" className="space-y-6 mt-6">
             {enrolledCourses.map((course) => (
               <motion.div
                 key={course.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <Card className="bg-card border-border overflow-hidden py-0">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col md:flex-row">
-                      <div className="relative p-4">
-                        <div className="relative w-full md:w-48 h-full my-auto rounded-2xl overflow-hidden">
-                          <Image
-                            width={200}
-                            height={130}
-                            src={course.thumbnail}
-                            alt={course.title}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
-                          <PlayCircle className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-white" />
-                        </div>
-                      </div>
-                      <div className="flex-1 p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="font-semibold text-foreground">
-                              {course.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              by {course.instructor}
-                            </p>
-                          </div>
-                          {course.progress === 100 ? (
-                            <Badge className="bg-success">Completed</Badge>
-                          ) : (
-                            <Badge variant="secondary">In Progress</Badge>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
-                              Progress
-                            </span>
-                            <span className="font-medium text-foreground">
-                              {course.progress}%
-                            </span>
-                          </div>
-                          <Progress value={course.progress} className="h-2" />
-                        </div>
-                        <div className="flex items-center justify-between mt-4">
-                          <span className="text-xs text-muted-foreground">
-                            Last accessed: {course.lastAccessed}
-                          </span>
-                          <Link href={`/course/${course.id}`}>
-                            <Button size="sm" variant="gradient">
-                              {course.progress === 100 ? "Review" : "Continue"}
-                            </Button>
-                          </Link>
-                        </div>
+                <div className="bg-white border border-border p-4 flex flex-col md:flex-row gap-6 rounded-none shadow-xs group relative">
+                  {/* Status Badge */}
+                  <span className={`absolute top-4 right-4 px-4 py-1 rounded-full text-xs font-semibold ${
+                    course.progress === 100 
+                      ? "bg-green-100 text-green-700" 
+                      : "bg-[#EBEBFF] text-indigo-600"
+                  }`}>
+                    {course.progress === 100 ? "Completed" : "In Progress"}
+                  </span>
+
+                  {/* Thumbnail */}
+                  <div className="relative w-full md:w-64 aspect-video shrink-0 rounded-none overflow-hidden">
+                    <Image
+                      fill
+                      src={course.thumbnail}
+                      alt={course.title}
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center bg-black/20 backdrop-blur-[2px]">
+                        <PlayCircle className="w-6 h-6 text-white fill-white" />
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <div>
+                    
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 flex flex-col justify-between py-1">
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-bold text-foreground line-clamp-1">
+                        {course.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Course by: <span className="text-foreground/80">{course.instructor}</span>
+                      </p>
+                    </div>
+
+                    <div className="mt-4 space-y-3">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground font-medium">Progress</span>
+                        <span className="text-foreground font-bold">{course.progress}%</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted overflow-hidden">
+                        <div 
+                          className="h-full bg-green-600 transition-all duration-500" 
+                          style={{ width: `${course.progress}%` }}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-xs text-muted-foreground">
+                          Last accessed: {course.lastAccessed}
+                        </span>
+                        <Link href={`/course/${course.id}`}>
+                          <Button 
+                            className="bg-[#CC0000] hover:bg-[#B30000] text-white rounded-none px-8 font-bold h-10"
+                          >
+                            {course.progress === 100 ? "Review" : "Continue"}
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </TabsContent>

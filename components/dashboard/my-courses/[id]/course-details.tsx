@@ -157,7 +157,7 @@ export default function CourseViewer() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen flex">
       {/* Main Content */}
       <div
         className={cn("flex-1 flex flex-col", sidebarOpen ? "lg:mr-96" : "")}
