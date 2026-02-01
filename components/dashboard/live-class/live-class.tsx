@@ -73,7 +73,7 @@ const mockLiveClasses = [
 
 const LiveClass = () => {
   return (
-    <div className="p-6 space-y-8 min-h-screen bg-background text-foreground font-sans ">
+    <div className="p-6 space-y-8 min-h-screen text-foreground font-sans ">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold font-display">Live Classes</h1>
@@ -115,7 +115,7 @@ const LiveClass = () => {
                         variant={
                           liveClass.status === "Live Now"
                             ? "destructive"
-                            : "secondary"
+                            : "outline"
                         }
                         className="rounded-full px-3"
                       >

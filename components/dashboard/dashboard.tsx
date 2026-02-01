@@ -157,7 +157,7 @@ const DonutChart = () => {
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
+    <div className="min-h-screen text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
       {/* Main Content */}
       <main className="flex-1 p-6 lg:p-10 overflow-y-auto scrollbar-hide">
         <header className="flex items-center justify-between mb-8">
@@ -166,7 +166,7 @@ const Dashboard = () => {
               Welcome Back, Royal
             </h1>
             <p className="text-muted-foreground mt-1 text-lg">
-              15 January, 2026
+              {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           </div>
           <Popover>
