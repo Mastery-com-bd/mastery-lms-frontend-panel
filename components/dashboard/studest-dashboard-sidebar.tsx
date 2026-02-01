@@ -4,6 +4,7 @@ import {
   BookOpen,
   FileQuestion,
   Heart,
+  HelpingHand,
   LayoutDashboard,
   LucideIcon,
   Search,
@@ -74,6 +75,11 @@ const sidebarRoutes = [
     icon: User,
     label: "Profile",
     href: "/dashboard/profile",
+  },
+  {
+    icon: HelpingHand,
+    label: "Support",
+    href: "/dashboard/support",
   },
   {
     icon: Settings,

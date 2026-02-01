@@ -1,9 +1,10 @@
+import Support from '@/components/dashboard/support/support'
 import React from 'react'
 
 const Page = () => {
   return (
     <div>
-        <h1>Payment Successful</h1>
+        <Support />
     </div>
   )
 }
