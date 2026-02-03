@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import {
@@ -14,6 +15,15 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Input } from "../ui/input";
+import { LogOut, LucideIcon, Search } from "lucide-react";
+import { Input } from "../ui/input";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { sidebarRoutes } from "@/const/navigation.const";
+import { Button } from "../ui/button";
+import { useUser } from "@/provider/AuthProvider";
+import { toast } from "sonner";
+import { logout } from "@/service/auth";
 
 const SidebarItem = ({
   icon: Icon,
@@ -44,57 +54,38 @@ const SidebarItem = ({
   );
 };
 
-const sidebarRoutes = [
-  {
-    icon: LayoutDashboard,
-    label: "Dashboard",
-    href: "/dashboard",
-  },
-  {
-    icon: BookOpen,
-    label: "My Courses",
-    href: "/dashboard/my-courses",
-  },
-  {
-    icon: Heart,
-    label: "Wishlist",
-    href: "/dashboard/wishlist",
-  },
-  /* {
-    icon: FileQuestion,
-    label: "Quiz System",
-    href: "/dashboard/quiz",
-  }, */
-  {
-    icon: Users,
-    label: "Live Classes",
-    href: "/dashboard/live-class",
-  },
-  {
-    icon: User,
-    label: "Profile",
-    href: "/dashboard/profile",
-  },
-  {
-    icon: HelpingHand,
-    label: "Support",
-    href: "/dashboard/support",
-  },
-  {
-    icon: Settings,
-    label: "Settings",
-    href: "/dashboard/settings",
-  },
-];
-
 const StudentDashboardSidebar = () => {
   const currentPath = usePathname();
+  const { setUser, setIsLoading } = useUser();
+  const router = useRouter();
+
+  const handleLogOut = async () => {
+    const toastId = toast.loading("Logging out...", { duration: 3000 });
+    try {
+      const res = await logout();
+      if (res.success) {
+        setIsLoading(true);
+        setUser(null);
+        toast.success(res.message, { id: toastId, duration: 3000 });
+        router.push("/login");
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      toast.error("An error occurred during logout.", {
+        id: toastId,
+        duration: 3000,
+      });
+    }
+  };
   return (
-    <div>
-      <aside className="w-full lg:w-64 border-r border-border p-6 flex-col gap-8 bg-card/30 hidden md:flex">
+    <aside className="w-full lg:w-64 border-r border-border p-6 flex-col justify-between gap-8 bg-card/30 hidden md:flex h-screen sticky top-0">
+      <section className="space-y-4 flex-1">
         <div className="flex items-center gap-2 px-2">
           <div className="font-display font-bold text-2xl tracking-tight">
-            Mastery LMS
+            <Link href="/" className="w-full">
+              Mastery LMS
+            </Link>
           </div>
         </div>
 
@@ -106,7 +97,7 @@ const StudentDashboardSidebar = () => {
           />
         </div>
 
-        <nav className="space-y-1.5 flex-1">
+        <nav className="space-y-1.5 ">
           {sidebarRoutes.map((route) => (
             <SidebarItem
               key={route.href}
@@ -117,8 +108,17 @@ const StudentDashboardSidebar = () => {
             />
           ))}
         </nav>
-      </aside>
-    </div>
+      </section>
+      <div className="w-full">
+        <Button
+          onClick={handleLogOut}
+          className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors relative text-muted-foreground hover:text-foreground w-full`}
+        >
+          <LogOut className={`h-5 w-5 text-foreground`} />
+          <span className="text-foreground">Logout</span>
+        </Button>
+      </div>
+    </aside>
   );
 };
 

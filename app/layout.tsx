@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Provider from "@/provider/Provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,8 +28,10 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-white`}
       >
-        {children}
-        <Toaster position="top-center" />
+        <Provider>
+          {children}
+          <Toaster position="top-center" richColors />
+        </Provider>
       </body>
     </html>
   );

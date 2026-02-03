@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const FreeSkill = () => {
   return (
-    <section className="pt-20 relative overflow-hidden bg-gray-50">
+    <section className="pt-20 mb-20 relative overflow-hidden bg-gray-50">
       {/* Dotted pattern background */}
       <div
         className="absolute inset-0 z-0"
@@ -13,7 +13,7 @@ const FreeSkill = () => {
           backgroundSize: "15px 15px",
         }}
       />
-      
+
       {/* Gradient blobs */}
       {/* <div className="absolute top-20 left-20 w-96 h-96 bg-pink-300 rounded-full opacity-40 blur-3xl z-0" /> */}
       {/* <div className="absolute top-40 left-60 w-80 h-80 bg-gray-200 rounded-full opacity-50 blur-3xl z-0" /> */}

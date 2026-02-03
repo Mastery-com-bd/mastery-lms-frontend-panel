@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { showError, showLoading, showSuccess } from "@/lib/toast";
+import { signUp } from "@/service/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -40,10 +41,9 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+export type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
@@ -52,7 +52,6 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: "",
-
       email: "",
       password: "",
       confirmPassword: "",
@@ -60,46 +59,39 @@ export default function RegisterPage() {
     },
   });
 
-  async function onSubmit(values: RegisterFormValues) {
-    console.log(values);
-    setIsLoading(true);
-    showLoading("Registering...");
+  const onSubmit = async (values: RegisterFormValues) => {
+    const toastId = toast.loading("creating account...");
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/registration`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      toast.dismiss();
-      showSuccess({ message: "Registration successful!", duration: 5000 });
-      router.push("/login");
-    } catch (error) {
-      console.error(error);
-      toast.dismiss();
-      showError({
-        message: "Registration failed. Please try again.",
-        duration: 5000,
-      });
-    } finally {
-      setIsLoading(false);
+      const res = await signUp(values);
+      if (res?.success) {
+        toast.success(res?.message, { id: toastId, duration: 3000 });
+        form.reset();
+        router.push("/login");
+      } else {
+        toast.error(res?.message, { id: toastId, duration: 3000 });
+      }
+    } catch (error: any) {
+      const errorInfo =
+        error?.error ||
+        error?.data?.message ||
+        error?.data?.errors[0]?.message ||
+        "Something went wrong!";
+      toast.error(errorInfo, { id: toastId, duration: 3000 });
     }
-  }
+  };
 
   return (
-    <div className="max-w-[1920px] mx-auto max-h-screen h-full flex items-center">
+    <div className="max-w-480 mx-auto max-h-screen h-full flex items-center">
       {/* Brand Panel */}
       <div className="w-1/2 max-h-[calc(100vh-81px)] z-20 flex items-center justify-center text-lg font-medium bg-primary">
-              <Image
-                src="/auth/SignUp.png"
-                alt="Logo"
-                width={800}
-                height={2000}
-                className="w-full h-full object-contain"
-              />
-            </div>
+        <Image
+          src="/auth/SignUp.png"
+          alt="Logo"
+          width={800}
+          height={2000}
+          className="w-full h-full object-contain"
+        />
+      </div>
 
       {/* Register Form Panel */}
       <div className="lg:p-8 w-1/2">
@@ -130,7 +122,7 @@ export default function RegisterPage() {
                             <FormControl>
                               <Input
                                 placeholder="Full name..."
-                                disabled={isLoading}
+                                disabled={form.formState.isSubmitting}
                                 className="h-12 text-lg px-4 border-gray-200 rounded-none"
                                 {...field}
                               />
@@ -154,7 +146,7 @@ export default function RegisterPage() {
                           <Input
                             placeholder="Email address"
                             type="email"
-                            disabled={isLoading}
+                            disabled={form.formState.isSubmitting}
                             className="h-12 text-lg px-4 border-gray-200 rounded-none"
                             {...field}
                           />
@@ -178,7 +170,7 @@ export default function RegisterPage() {
                               <Input
                                 placeholder="Create password"
                                 type={showPassword ? "text" : "password"}
-                                disabled={isLoading}
+                                disabled={form.formState.isSubmitting}
                                 className="h-12 text-lg px-4 pr-12 border-gray-200 rounded-none"
                                 {...field}
                               />
@@ -212,7 +204,7 @@ export default function RegisterPage() {
                               <Input
                                 placeholder="Confirm password"
                                 type={showConfirmPassword ? "text" : "password"}
-                                disabled={isLoading}
+                                disabled={form.formState.isSubmitting}
                                 className="h-12 text-lg px-4 pr-12 border-gray-200 rounded-none"
                                 {...field}
                               />
@@ -268,7 +260,7 @@ export default function RegisterPage() {
                     <Button
                       type="submit"
                       className="h-14 px-8 bg-primary text-white text-xl font-bold rounded-none flex items-center gap-4"
-                      disabled={isLoading}
+                      disabled={form.formState.isSubmitting}
                     >
                       Create Account
                       <svg
@@ -288,6 +280,12 @@ export default function RegisterPage() {
                   </div>
                 </form>
               </Form>
+              <p className="text-gray-400 font-medium flex justify-center gap-2">
+                <span>Already have an account?</span>
+                <Link className="text-[#D90000]" href="/login">
+                  Login
+                </Link>
+              </p>
 
               <div className="relative py-4">
                 <div className="absolute inset-0 flex items-center">

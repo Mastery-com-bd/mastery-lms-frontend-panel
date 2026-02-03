@@ -9,10 +9,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className=" bg-white">
       <Navbar />
-     
-      <div className={`${quicksand.className} max-w-360 mx-auto`}>
-        {children}
-      </div>
+      {children}
       <Footer />
     </div>
   );
