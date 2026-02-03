@@ -1,29 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
+import { sidebarRoutes } from "@/const/navigation.const";
+import { useUser } from "@/provider/AuthProvider";
+import { logout } from "@/service/auth";
 import {
-  BookOpen,
-  Heart,
-  HelpingHand,
-  LayoutDashboard,
+  LogOut,
   LucideIcon,
-  Search,
-  Settings,
-  User,
-  Users
+  Search
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Input } from "../ui/input";
-import { LogOut, LucideIcon, Search } from "lucide-react";
-import { Input } from "../ui/input";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { sidebarRoutes } from "@/const/navigation.const";
-import { Button } from "../ui/button";
-import { useUser } from "@/provider/AuthProvider";
 import { toast } from "sonner";
-import { logout } from "@/service/auth";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 const SidebarItem = ({
   icon: Icon,
