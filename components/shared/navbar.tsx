@@ -4,7 +4,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/provider/AuthProvider";
-import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,6 +11,13 @@ import { useState } from "react";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import { logout } from "@/service/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { LogOut, LayoutDashboard, User, Menu, X } from "lucide-react";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -82,20 +88,34 @@ const Navbar = () => {
               ))}
             </div>
             {user ? (
-              <div className="flex items-center gap-4">
-                <Button
-                  asChild
-                  className="bg-primary hover:bg-[#B30000] text-white px-8 rounded-lg h-11 font-bold text-base"
-                >
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-                <Button
-                  onClick={handleLogOut}
-                  className="bg-primary hover:bg-[#B30000] text-white px-8 rounded-lg h-11 font-bold text-base cursor-pointer"
-                >
-                  <LogOut size={20} /> Log out
-                </Button>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="bg-primary hover:bg-[#B30000] text-white px-6 rounded-lg h-11 font-bold text-base">
+                    <User className="mr-2 h-4 w-4" />
+                    Account
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={handleLogOut}
+                    className="flex items-center gap-2 text-red-600 cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Button
                 asChild
