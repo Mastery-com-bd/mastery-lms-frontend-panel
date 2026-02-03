@@ -25,11 +25,11 @@ export const sidebarRoutes = [
     label: "Wishlist",
     href: "/dashboard/wishlist",
   },
-  {
+  /* {
     icon: FileQuestion,
     label: "Quiz System",
     href: "/dashboard/quiz",
-  },
+  }, */
   {
     icon: Users,
     label: "Live Classes",
