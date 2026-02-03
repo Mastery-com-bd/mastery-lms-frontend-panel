@@ -4,17 +4,20 @@ import Image from "next/image";
 const testimonials = [
   {
     name: "Emily Halter",
-    content: "MiNi Online Skills has been a game-changer for my 7-year-old! The adaptive lessons make learning enjoyable, and the personalized practice sheets are a lifesaver.",
+    content:
+      "MiNi Online Skills has been a game-changer for my 7-year-old! The adaptive lessons make learning enjoyable, and the personalized practice sheets are a lifesaver.",
     rating: 5,
   },
   {
     name: "Mars Sam",
-    content: "The practice sheets help me get better at stuff, and the motivational stories are super fun. I can even tell my own stories sometimes! MiNi Online Skills makes me look forward to learning.",
+    content:
+      "The practice sheets help me get better at stuff, and the motivational stories are super fun. I can even tell my own stories sometimes! MiNi Online Skills makes me look forward to learning.",
     rating: 5,
   },
   {
     name: "Lisa Parker",
-    content: "Homeschooling three kids can be challenging, but MiNi Online Skills has been a game-changer for us. Their course cover a range of subjects, making learning diverse and engaging.",
+    content:
+      "Homeschooling three kids can be challenging, but MiNi Online Skills has been a game-changer for us. Their course cover a range of subjects, making learning diverse and engaging.",
     rating: 5,
   },
 ];
@@ -23,17 +26,27 @@ const Testimonials = () => {
   return (
     <section className="py-20 bg-[#fafafa] relative overflow-hidden">
       {/* Decorative Illustrations */}
-      <div className="absolute top-10 left-[10px] hidden lg:block">
+      <div className="absolute top-10 left-2.5 hidden lg:block">
         {/* Planet/Stars Illustration Placeholder */}
-        <div className=" w-[200px] h-[200px]">
-           <Image src="/testimonials/earth-illustration.png" alt="Planet/Stars" fill className="w-[200px] h-[200px] object-contain" />
+        <div className=" w-50 h-50">
+          <Image
+            src="/testimonials/earth-illustration.png"
+            alt="Planet/Stars"
+            fill
+            className="w-50 h-50 object-contain"
+          />
         </div>
       </div>
-      
+
       <div className="absolute top-10 right-2.5 hidden lg:block">
         {/* ABC Blocks Illustration Placeholder */}
         <div className=" w-50 h-50">
-           <Image src="/testimonials/abc-illustration.png" alt="Planet/Stars" fill className="w-50 h-50 object-contain" />
+          <Image
+            src="/testimonials/abc-illustration.png"
+            alt="Planet/Stars"
+            fill
+            className="w-50 h-50 object-contain"
+          />
         </div>
       </div>
 
@@ -59,12 +72,17 @@ const Testimonials = () => {
                   {testimonial.content}
                 </p>
               </div>
-              
+
               <div className="mt-8 flex items-center justify-between">
-                <span className="font-bold text-[#1a1a1a]">{testimonial.name}</span>
+                <span className="font-bold text-[#1a1a1a]">
+                  {testimonial.name}
+                </span>
                 <div className="flex gap-1">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-[#e5a4a4] text-[#e5a4a4]" />
+                    <Star
+                      key={i}
+                      className="h-4 w-4 fill-[#e5a4a4] text-[#e5a4a4]"
+                    />
                   ))}
                 </div>
               </div>
