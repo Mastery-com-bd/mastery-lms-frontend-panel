@@ -4,10 +4,10 @@ import { getCurrentUser, getNewToken, logout } from "./service/auth";
 
 const authRoutes = ["/login", "/signUp"];
 
-const rolebasedPrivateUser = {
-  ADMIN: [/^\/dashboard(\/.*)?$/],
-  STUDENT: [/^\/dashboard(\/.*)?$/],
-  INSTRUCTOR: [/^\/dashboard(\/.*)?$/],
+export const rolebasedPrivateUser = {
+  ADMIN: [/^\/dashboard(\/(?!my-courses).*)?$/], // everything except my-courses
+  INSTRUCTOR: [/^\/dashboard(\/(?!my-courses).*)?$/], // everything except my-courses
+  STUDENT: [/^\/dashboard(\/.*)?$/], // can access everything
 };
 
 type TRole = keyof typeof rolebasedPrivateUser;
