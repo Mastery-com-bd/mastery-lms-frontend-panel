@@ -1,13 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { useUser } from "@/provider/AuthProvider";
+import { LogOut, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Separator } from "../ui/separator";
+import { toast } from "sonner";
+import { logout } from "@/service/auth";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -20,6 +24,28 @@ const navLinks = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { user, setUser, setIsLoading } = useUser();
+  const router = useRouter();
+
+  const handleLogOut = async () => {
+    const toastId = toast.loading("Logging out...", { duration: 3000 });
+    try {
+      const res = await logout();
+      if (res.success) {
+        setIsLoading(true);
+        setUser(null);
+        toast.success(res.message, { id: toastId, duration: 3000 });
+        router.push("/login");
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      toast.error("An error occurred during logout.", {
+        id: toastId,
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white">
@@ -55,12 +81,29 @@ const Navbar = () => {
                 </Link>
               ))}
             </div>
-            <Button
-              asChild
-              className="bg-primary hover:bg-[#B30000] text-white px-8 rounded-lg h-11 font-bold text-base"
-            >
-              <Link href="/login">Log In</Link>
-            </Button>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <Button
+                  asChild
+                  className="bg-primary hover:bg-[#B30000] text-white px-8 rounded-lg h-11 font-bold text-base"
+                >
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+                <Button
+                  onClick={handleLogOut}
+                  className="bg-primary hover:bg-[#B30000] text-white px-8 rounded-lg h-11 font-bold text-base cursor-pointer"
+                >
+                  <LogOut size={20} /> Log out
+                </Button>
+              </div>
+            ) : (
+              <Button
+                asChild
+                className="bg-primary hover:bg-[#B30000] text-white px-8 rounded-lg h-11 font-bold text-base"
+              >
+                <Link href="/login">Log In</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -93,14 +136,33 @@ const Navbar = () => {
               </Link>
             ))}
           </div>
-          <Button
-            asChild
-            className="w-full bg-[#D90000] hover:bg-[#B30000] text-white font-bold"
-          >
-            <Link href="/login" onClick={() => setIsOpen(false)}>
-              Log In
-            </Link>
-          </Button>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <Button
+                asChild
+                className="w-full bg-[#D90000] hover:bg-[#B30000] text-white font-bold"
+              >
+                <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                  Dashboard
+                </Link>
+              </Button>
+              <Button
+                onClick={handleLogOut}
+                className="w-full bg-[#D90000] hover:bg-[#B30000] text-white font-bold"
+              >
+                <LogOut size={20} /> Log out
+              </Button>
+            </div>
+          ) : (
+            <Button
+              asChild
+              className="w-full bg-[#D90000] hover:bg-[#B30000] text-white font-bold"
+            >
+              <Link href="/login" onClick={() => setIsOpen(false)}>
+                Log In
+              </Link>
+            </Button>
+          )}
         </div>
       )}
       <Separator className="bg-black/10 h-px" />

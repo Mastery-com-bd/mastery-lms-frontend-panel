@@ -1,12 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -21,12 +17,13 @@ import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
-import { showError, showLoading, showSuccess } from "@/lib/toast";
 import { toast } from "sonner";
+import { login } from "@/service/auth";
+import { useUser } from "@/provider/AuthProvider";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -38,8 +35,9 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [redirect, setRedirect] = useState<string | null>(null);
+  const { refetchUser, setIsLoading } = useUser();
   const router = useRouter();
 
   const form = useForm<LoginFormValues>({
@@ -50,37 +48,38 @@ export default function LoginPage() {
     },
   });
 
-  async function onSubmit(values: LoginFormValues) {
-    console.log(values);
-    setIsLoading(true);
-    showLoading("Logging in...");
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-        credentials: "include",
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirectParam = params.get("redirectPath");
+    if (redirectParam) {
+      Promise.resolve().then(() => {
+        setRedirect(redirectParam);
       });
-
-      if (!res.ok) {
-        toast.dismiss();
-        showError({message: await res.json().then((data) => data.message), duration: 5000});
-        return;
-      }
-
-      toast.dismiss();
-      showSuccess({message: await res.json().then((data) => data.message), duration: 5000});
-      router.push("/");
-    } catch (error) {
-      toast.dismiss();
-      showError({message: "Failed to login", duration: 5000});
-      console.error(error);
-    } finally {
-      setIsLoading(false);
     }
-  }
+  }, []);
+
+  const onSubmit = async (values: LoginFormValues) => {
+    const toastId = toast.loading("logging in");
+    try {
+      const res = await login(values);
+      if (res?.success) {
+        setIsLoading(false);
+        await refetchUser();
+        toast.success(res?.message, { id: toastId, duration: 3000 });
+        form.reset();
+        router.push(redirect ? redirect : "/dashboard");
+      } else {
+        toast.error(res?.message, { id: toastId, duration: 3000 });
+      }
+    } catch (error: any) {
+      const errorInfo =
+        error?.error ||
+        error?.data?.message ||
+        error?.data?.errors[0]?.message ||
+        "Something went wrong!";
+      toast.error(errorInfo, { id: toastId, duration: 3000 });
+    }
+  };
 
   return (
     <div className="max-w-360 mx-auto max-h-screen h-full flex items-center">
@@ -124,7 +123,7 @@ export default function LoginPage() {
                             autoCapitalize="none"
                             autoComplete="email"
                             autoCorrect="off"
-                            disabled={isLoading}
+                            disabled={form.formState.isSubmitting}
                             className="h-12 text-lg px-4 border-gray-200 rounded-none"
                             {...field}
                           />
@@ -146,7 +145,7 @@ export default function LoginPage() {
                             <Input
                               placeholder="Password"
                               type={showPassword ? "text" : "password"}
-                              disabled={isLoading}
+                              disabled={form.formState.isSubmitting}
                               className="h-12 text-lg px-4 pr-12 border-gray-200 rounded-none"
                               {...field}
                             />
@@ -189,7 +188,7 @@ export default function LoginPage() {
                     </Link>
                     <Button
                       className="h-14 sm:w-50 px-8 bg-[#D90000] hover:bg-[#B30000] text-white text-xl font-bold rounded-none flex items-center gap-4"
-                      disabled={isLoading}
+                      disabled={form.formState.isSubmitting}
                     >
                       Log In
                       <ArrowRight className="h-6 w-6" />
@@ -198,7 +197,14 @@ export default function LoginPage() {
                 </form>
               </Form>
 
-              <div className="relative py-4">
+              <p className="text-gray-400 font-medium flex justify-center gap-2">
+                <span>New to this site?</span>
+                <Link className="text-[#D90000]" href="/signUp">
+                  Sign Up
+                </Link>
+              </p>
+
+              <div className="relative py-4 ">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-gray-200" />
                 </div>

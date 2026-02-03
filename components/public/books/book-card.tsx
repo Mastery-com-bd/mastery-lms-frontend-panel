@@ -13,7 +13,6 @@ interface BookCardProps {
 }
 
 const BookCard = ({
-  image,
   title,
   price,
   originalPrice,
@@ -21,10 +20,9 @@ const BookCard = ({
   currency = "BDT",
 }: BookCardProps) => {
   return (
-    <div className="group relative w-full max-w-[320px] bg-white rounded-[2rem] p-3 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(204,0,0,0.12)] border border-border hover:border-gray-100 flex flex-col h-full overflow-hidden">
+    <div className="group relative w-full max-w-[320px] bg-white rounded-[2rem] p-3 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(204,0,0,0.12)] border border-transparent hover:border-gray-100 flex flex-col h-full overflow-hidden">
       {/* Top Section: Image & Interactive Layer */}
       <div className="relative aspect-4/5 w-full overflow-hidden rounded-[1.5rem] bg-[#fdfdfd] flex items-center justify-center">
-       
         {isSale && (
           <div className="absolute top-4 left-4 z-20">
             <span className="bg-white/80 backdrop-blur-md text-[#CC0000] text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm uppercase tracking-widest border border-white/20">
@@ -66,10 +64,13 @@ const BookCard = ({
           <h3 className="text-[#1a1a1a] font-bold text-lg leading-tight line-clamp-2 transition-colors group-hover:text-[#CC0000]">
             {title}
           </h3>
-          
+
           <div className="flex items-center gap-3">
             <span className="text-xl font-black text-[#1a1a1a]">
-              ${price} <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{currency}</span>
+              ${price}{" "}
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                {currency}
+              </span>
             </span>
             {originalPrice && (
               <span className="text-sm text-gray-400 line-through font-medium">
@@ -78,14 +79,18 @@ const BookCard = ({
             )}
           </div>
         </div>
-        
+
         {/* Availability Indicator */}
         <div className="mt-5 pt-4 border-t border-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Available</span>
+            <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">
+              Available
+            </span>
           </div>
-          <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">New Arrival</span>
+          <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+            New Arrival
+          </span>
         </div>
       </div>
     </div>
