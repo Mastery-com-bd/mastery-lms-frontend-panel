@@ -1,9 +1,9 @@
-import BookPage from "@/components/public/books/book-page";
+import Login from "@/components/old/auth/login";
 
 const Page = () => {
   return (
     <div>
-      <BookPage />
+      <Login />
     </div>
   );
 };
