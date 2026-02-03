@@ -48,9 +48,12 @@ const AllCoueses = () => {
 
   useEffect(() => {
     const getCourses = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/course?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language ? `&language=${query.filter.language}` : ""}`, {
-        method: "GET",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/course?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language && query.filter.language !== "ALL" ? `&language=${query.filter.language}` : ""}${query.filter.subject && query.filter.subject !== "ALL" ? `&subject=${query.filter.subject}` : ""}`,
+        {
+          method: "GET",
+        },
+      );
       const { data, meta } = await res.json();
       setCourses(data);
       setMeta({
@@ -83,17 +86,22 @@ const AllCoueses = () => {
           />
         ))}
       </div>
-
+      <div className="px-10">
+        {JSON.stringify(meta)}
+      </div>
       {/* Pagination */}
-      <PaginatioComponent
-        pagination={{
-          productCount: meta.total * meta.limit || 0,
-          totalPage: meta?.total > 0 ? Math.ceil(meta?.total / meta?.limit) : 0,
-          page: meta?.page || 0,
-          per_page: meta?.limit || 0,
-          hasNext: meta?.page < meta?.total || false,
-        }}
-      />
+      {meta.total > 1 && (
+        <PaginatioComponent
+          pagination={{
+            productCount: meta.total * meta.limit || 0,
+            totalPage:
+              meta?.total > 0 ? Math.ceil(meta?.total / meta?.limit) : 0,
+            page: meta?.page || 0,
+            per_page: meta?.limit || 0,
+            hasNext: meta?.page < meta?.total || false,
+          }}
+        />
+      )}
 
       {/* Course Support */}
       <CourseSupport />

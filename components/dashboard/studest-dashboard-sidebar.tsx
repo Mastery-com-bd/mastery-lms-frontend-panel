@@ -2,7 +2,6 @@
 
 import {
   BookOpen,
-  FileQuestion,
   Heart,
   HelpingHand,
   LayoutDashboard,
@@ -10,11 +9,11 @@ import {
   Search,
   Settings,
   User,
-  Users,
+  Users
 } from "lucide-react";
-import { Input } from "../ui/input";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Input } from "../ui/input";
 
 const SidebarItem = ({
   icon: Icon,
@@ -61,11 +60,11 @@ const sidebarRoutes = [
     label: "Wishlist",
     href: "/dashboard/wishlist",
   },
-  {
+  /* {
     icon: FileQuestion,
     label: "Quiz System",
     href: "/dashboard/quiz",
-  },
+  }, */
   {
     icon: Users,
     label: "Live Classes",
