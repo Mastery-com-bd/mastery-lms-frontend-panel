@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -99,7 +100,7 @@ const BookPage = () => {
 
         <div className="flex flex-wrap gap-4 w-full md:w-auto">
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-full md:w-[180px] h-12 rounded-xl border-gray-200">
+            <SelectTrigger className="w-full md:w-45 h-12 rounded-xl border-gray-200">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -118,7 +119,7 @@ const BookPage = () => {
               setSortOrder(order);
             }}
           >
-            <SelectTrigger className="w-full md:w-[180px] h-12 rounded-xl border-gray-200">
+            <SelectTrigger className="w-full md:w-45 h-12 rounded-xl border-gray-200">
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>
@@ -135,7 +136,7 @@ const BookPage = () => {
 
       {/* Products Grid */}
       {loading ? (
-        <div className="flex flex-col justify-center items-center min-h-[400px] gap-4">
+        <div className="flex flex-col justify-center items-center min-h-100 gap-4">
           <Loader2 className="w-12 h-12 text-[#CC0000] animate-spin" />
           <p className="text-gray-500 font-medium">Fetching books...</p>
         </div>
