@@ -1,11 +1,15 @@
 import MyCourses from "@/components/dashboard/my-courses/my-courses";
+import { getMyCourses } from "@/service/course";
 
-const Page = () => {
+const MyCoursesPage = async () => {
+  const result = await getMyCourses();
+  const myCourses = result?.data || [];
+
   return (
     <div className="w-full h-full">
-      <MyCourses />
+      <MyCourses myCourses={myCourses} />
     </div>
   );
 };
 
-export default Page;
+export default MyCoursesPage;
