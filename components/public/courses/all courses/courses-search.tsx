@@ -48,12 +48,11 @@ const CoursesSearch = ({ setQuery }: { setQuery: (query: QueryType) => void }) =
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [search, filters,]);
+  }, [search, filters, setQuery]);
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    setFilters((prev) => ({ ...prev, [key]: value === "all" ? "" : value }));
   };
-
   return (
     <div className="relative w-full py-20 px-4 overflow-hidden">
       {/* Background Image with Overlay */}
@@ -88,9 +87,9 @@ const CoursesSearch = ({ setQuery }: { setQuery: (query: QueryType) => void }) =
           {/* Filter Bar */}
           <div className="flex items-center justify-center gap-3">
             {[
-              { key: "subject", label: "Subject", options: ["Math", "Science", "Arts", "Business"] },
+              { key: "subject", label: "Subject", options: ["all", "Math", "Science", "Arts", "Business"] },
               // { key: "category", label: "Category", options: ["Design", "Development", "Marketing"] },
-              { key: "language", label: "Language", options: ["ENGLISH", "BENGALI", "SPANISH"] },
+              { key: "language", label: "Language", options: ["all", "ENGLISH", "BENGALI", "SPANISH"] },
               // { key: "availability", label: "Availability", options: ["All", "Available", "Upcoming"] },
               // { key: "learningType", label: "Learning Type", options: ["Online", "Offline", "Hybrid"] },
             ].map((filter) => (

@@ -1,6 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
+import {
+  BookOpen,
+  Heart,
+  HelpingHand,
+  LayoutDashboard,
+  LucideIcon,
+  Search,
+  Settings,
+  User,
+  Users
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Input } from "../ui/input";
 import { LogOut, LucideIcon, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import Link from "next/link";

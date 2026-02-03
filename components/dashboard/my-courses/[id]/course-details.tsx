@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import {
   BookOpen,
@@ -18,121 +18,275 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  HelpCircle,
   Loader2,
-  Maximize,
   MessageSquare,
-  Pause,
   Play,
   Users,
-  Volume2,
-  VolumeX,
+  XCircle,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Mock Data
-const mockCourse = {
-  id: "1",
-  title: "The Complete History 2023: From Zero To Expert!",
-  description: "Master historical analysis with 45h of content.",
-  enrollment_count: 12500,
-  modules: [
-    {
-      id: "module-1",
-      title: "Intro To Course And History",
-      lessons: [
-        {
-          id: "lesson-1",
-          title: "Course Intro",
-          duration: 10,
-          content:
-            "Welcome to the course! This lesson covers course objectives.",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        },
-        {
-          id: "lesson-2",
-          title: "Why History Matters",
-          duration: 15,
-          content: "Understanding the importance of history.",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        },
-      ],
-    },
-    {
-      id: "module-2",
-      title: "Ancient Civilizations",
-      lessons: [
-        {
-          id: "lesson-3",
-          title: "Mesopotamia",
-          duration: 20,
-          content: "The cradle of civilization.",
-          videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        },
-      ],
-    },
-  ],
-};
+interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  type?: "multiple_choice" | "multiple_selection";
+}
 
-export default function CourseViewer() {
-  const params = useParams();
-  const id = params?.id;
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [currentLessonId, setCurrentLessonId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+interface Quiz {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  passingScore: number;
+  questions?: QuizQuestion[];
+}
+interface WatchedLesson {
+  firstWatchedAt: string;
+  id: string;
+  isCompleted: boolean;
+  lastPosition: number | null;
+  lastWatchedAt: string;
+  totalDuration: number;
+  userId: string;
+  watchedDuration: number;
+}
 
-  const [course, setCourse] = useState<any>(null);
-  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
+interface Lesson {
+  id: string;
+  title: string;
+  duration: number | null;
+  isPreview: boolean;
+  content?: string;
+  videoUrl?: string;
+  quiz?: Quiz | null;
+  watchedLessons: WatchedLesson[];
+}
 
-  useEffect(() => {
-    // Simulate API call
-    const timer = setTimeout(() => {
-      setCourse(mockCourse);
-      if (mockCourse.modules[0]?.lessons[0]) {
-        setCurrentLessonId(mockCourse.modules[0].lessons[0].id);
-      }
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [id]);
+interface Section {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  lessons: Lesson[];
+}
 
-  const currentLesson = course?.modules
-    ?.flatMap((m: any) => m.lessons || [])
-    .find((l: any) => l.id === currentLessonId);
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  enrollment_count?: number;
+  sections: Section[];
+}
 
-  const allLessons =
-    course?.modules?.flatMap((m: any) => m.lessons || []) || [];
-  const currentIndex = allLessons.findIndex(
-    (l: any) => l.id === currentLessonId
+export default function CourseViewer({ courseId }: { courseId: string }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentLessonId = searchParams.get("lessonId");
+
+  const [course, setCourse] = useState<Course | null>(null);
+  const [currentLessonData, setCurrentLessonData] = useState<Lesson | null>(
+    null,
   );
+  const [loading, setLoading] = useState(true);
+  const [lessonLoading, setLessonLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
+  const [isSubmittingQuiz, setIsSubmittingQuiz] = useState(false);
+  const [quizResult, setQuizResult] = useState<any>(null);
 
-  const completedLessons = completedLessonIds.length;
-  const progressPercent =
-    allLessons.length > 0 ? (completedLessons / allLessons.length) * 100 : 0;
+  // Fetch Course Details
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/course/${courseId}`,
+        );
+        const { data } = await res.json();
+        setCourse(data);
 
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentLessonId(allLessons[currentIndex - 1].id);
+        console.log("Course Details: ", data);
+
+        // Auto-select first lesson if none selected
+        if (!currentLessonId && data?.sections?.[0]?.lessons?.[0]) {
+          const firstLessonId = data.sections[0].lessons[0].id;
+          router.replace(`?lessonId=${firstLessonId}`);
+        }
+      } catch (error) {
+        console.error("Error fetching course:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [courseId, currentLessonId, router]);
+
+  // Fetch Lesson Details
+  useEffect(() => {
+    const fetchLesson = async () => {
+      try {
+        setLessonLoading(true);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/lesson/${currentLessonId}`,
+        );
+        const { data } = await res.json();
+        console.log("Lesson Details: ", data);
+        setCurrentLessonData(data);
+      } catch (error) {
+        console.error("Error fetching lesson:", error);
+      } finally {
+        setLessonLoading(false);
+      }
+    };
+
+    if (currentLessonId) {
+      fetchLesson();
+      setQuizAnswers({}); // Reset quiz on lesson change
+      setQuizResult(null); // Reset results on lesson change
+    }
+  }, [currentLessonId]);
+
+  // Handle Lesson
+  const allLessons = course?.sections?.flatMap((s) => s.lessons) || [];
+  const currentLesson =
+    currentLessonData || allLessons.find((l) => l.id === currentLessonId);
+  const currentIndex = allLessons.findIndex((l) => l.id === currentLessonId);
+
+  // Update Completed Lessons
+  const handleLessonComplete = (lessonId: string, isPreview: boolean) => {
+    console.log(lessonId, isPreview);
+  };
+
+  // Quiz Submission Handler
+  const handleQuizSubmit = async (quizId: string) => {
+    try {
+      setIsSubmittingQuiz(true);
+      const payload = {
+        answers: Object.entries(quizAnswers).map(
+          ([questionId, selectedAnswer]) => ({
+            questionId,
+            selectedAnswer,
+          }),
+        ),
+      };
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/quiz/${quizId}/attempt`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const result = await response.json();
+      if (result.success) {
+        setQuizResult(result.data);
+      } else {
+        showError({ message: result.message || "Error submitting quiz" });
+      }
+    } catch (error) {
+      console.error("Error submitting quiz:", error);
+    } finally {
+      setIsSubmittingQuiz(false);
     }
   };
 
+  const handleSelectAnswer = (questionId: string, answerIndex: number) => {
+    setQuizAnswers((prev) => ({
+      ...prev,
+      [questionId]: answerIndex,
+    }));
+  };
+
+  // Render Video Player
+  const renderVideoPlayer = () => {
+    if (!currentLesson?.videoUrl) return null;
+
+    const isYouTube =
+      currentLesson.videoUrl.includes("youtube.com") ||
+      currentLesson.videoUrl.includes("youtu.be");
+
+    if (isYouTube) {
+      const videoId =
+        currentLesson.videoUrl.split("v=")[1] ||
+        currentLesson.videoUrl.split("/").pop();
+      return (
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}`}
+          className="absolute inset-0 w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      );
+    }
+
+    return (
+      <video
+        src={currentLesson.videoUrl}
+        className="absolute inset-0 w-full h-full object-contain"
+        controls
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+    );
+  };
+
+  const handleLessonSelect = (lessonId: string) => {
+    router.push(`?lessonId=${lessonId}`);
+  };
+
   const handleNext = () => {
-    // Mark current lesson as complete
+    if (!currentLessonData?.id) return;
+    handleLessonComplete(currentLessonData?.id, true);
     if (currentLessonId && !completedLessonIds.includes(currentLessonId)) {
       setCompletedLessonIds([...completedLessonIds, currentLessonId]);
     }
 
+    if (
+      currentLessonData &&
+      !currentLessonData.watchedLessons?.[0]?.isCompleted
+    ) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/lesson/${currentLessonId}/watch`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Lesson Completion Response:", data);
+          if (data.success) {
+            showSuccess({ message: "Lesson completed successfully" });
+          }
+        })
+        .catch(() => {
+          showError({ message: "Error completing lesson" });
+        });
+    }
+
     if (currentIndex < allLessons.length - 1) {
-      setCurrentLessonId(allLessons[currentIndex + 1].id);
+      handleLessonSelect(allLessons[currentIndex + 1].id);
     }
   };
 
-  const isLessonCompleted = (lessonId: string) => {
-    return completedLessonIds.includes(lessonId);
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      handleLessonSelect(allLessons[currentIndex - 1].id);
+    }
   };
 
   if (loading) {
@@ -180,12 +334,6 @@ export default function CourseViewer() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 mr-4">
-              <Progress value={progressPercent} className="w-32 h-2" />
-              <span className="text-sm text-muted-foreground">
-                {Math.round(progressPercent)}%
-              </span>
-            </div>
             <Button
               variant="ghost"
               size="icon"
@@ -199,90 +347,31 @@ export default function CourseViewer() {
 
         {/* Video Player */}
         <div className="relative bg-foreground/95 aspect-video w-full overflow-hidden">
-          {/* YouTube Video Embed */}
-          <iframe
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-            className={`absolute inset-0 w-full h-full ${
-              isPlaying ? "" : "opacity-0"
-            }`}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            title={currentLesson?.title || "Course Lesson"}
-          />
-          {/* Video Placeholder */}
-          <div
-            className={`absolute inset-0 flex items-center justify-center ${
-              isPlaying ? "opacity-0 pointer-events-none" : ""
-            }`}
-          >
-            <div className="text-center text-background/80">
-              <div
-                className="w-20 h-20 rounded-full bg-background/20 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm cursor-pointer hover:bg-background/30 transition-colors"
-                onClick={() => setIsPlaying(!isPlaying)}
-              >
-                {isPlaying ? (
-                  <Pause className="h-8 w-8" />
-                ) : (
-                  <Play className="h-8 w-8 ml-1" />
-                )}
-              </div>
-              <p className="font-medium">
-                {currentLesson?.title || "Select a lesson"}
-              </p>
-              <p className="text-sm opacity-70">
-                {currentLesson?.duration || 0} min
-              </p>
+          {lessonLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-foreground/10 backdrop-blur-sm">
+              <Loader2 className="w-10 h-10 animate-spin text-primary" />
             </div>
-          </div>
-
-          {/* Video Controls */}
-          <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-foreground/80 to-transparent p-4">
-            <div className="w-full h-1 bg-background/30 rounded-full mb-3 cursor-pointer group">
-              <div className="h-full w-1/3 bg-primary rounded-full relative">
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-background">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-background hover:bg-background/20"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                >
-                  {isPlaying ? (
-                    <Pause className="h-5 w-5" />
-                  ) : (
-                    <Play className="h-5 w-5" />
-                  )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-background hover:bg-background/20"
-                  onClick={() => setIsMuted(!isMuted)}
-                >
-                  {isMuted ? (
-                    <VolumeX className="h-5 w-5" />
-                  ) : (
-                    <Volume2 className="h-5 w-5" />
-                  )}
-                </Button>
-                <span className="text-sm">
-                  0:00 / {currentLesson?.duration || 0}:00
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-background hover:bg-background/20"
-              >
-                <Maximize className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+          ) : (
+            <>
+              {renderVideoPlayer()}
+              {/* Video Placeholder (only if no videoUrl) */}
+              {!currentLesson?.videoUrl && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-background/80">
+                    <div
+                      className="w-20 h-20 rounded-full bg-background/20 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm cursor-pointer hover:bg-background/30 transition-colors"
+                      onClick={() => setIsPlaying(!isPlaying)}
+                    >
+                      <Play className="h-8 w-8 ml-1" />
+                    </div>
+                    <p className="font-medium">
+                      No video available for this lesson
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Lesson Info & Tabs */}
@@ -315,7 +404,7 @@ export default function CourseViewer() {
               <Button
                 variant="gradient"
                 size="sm"
-                onClick={handleNext}
+                onClick={() => handleNext()}
                 disabled={currentIndex === allLessons.length - 1}
               >
                 Next <ChevronRight className="h-4 w-4 ml-1" />
@@ -323,22 +412,301 @@ export default function CourseViewer() {
             </div>
           </div>
 
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="w-full justify-start">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="notes">Notes</TabsTrigger>
-              <TabsTrigger value="discussion">Discussion</TabsTrigger>
+          <Tabs
+            value={searchParams.get("tab") || "overview"}
+            onValueChange={(value) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("tab", value);
+              router.push(`?${params.toString()}`);
+            }}
+            className="w-full"
+          >
+            <TabsList className="w-full justify-start border-b border-border h-auto p-0 bg-transparent rounded-none gap-8">
+              <TabsTrigger
+                value="overview"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 font-bold transition-all"
+              >
+                Overview
+              </TabsTrigger>
+              {currentLesson?.quiz && (
+                <TabsTrigger
+                  value="quiz"
+                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 font-bold transition-all"
+                >
+                  Lesson Quiz
+                </TabsTrigger>
+              )}
+              <TabsTrigger
+                value="notes"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 font-bold transition-all"
+              >
+                Notes
+              </TabsTrigger>
+              <TabsTrigger
+                value="discussion"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-3 font-bold transition-all"
+              >
+                Discussion
+              </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-4 mt-4">
+            <TabsContent value="overview" className="space-y-4 mt-6">
               <div className="prose prose-sm max-w-none text-muted-foreground">
                 <p>
                   {currentLesson?.content ||
                     course.description ||
-                    "No description available."}
+                    "No description available for this lesson."}
                 </p>
               </div>
             </TabsContent>
+
+            {currentLesson?.quiz && (
+              <TabsContent value="quiz" className="mt-6">
+                {quizResult ? (
+                  <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-8 shadow-sm">
+                    {/* Quiz Result Header */}
+                    <div className="text-center space-y-4 border-b border-border pb-8">
+                      <div
+                        className={cn(
+                          "w-20 h-20 rounded-full mx-auto flex items-center justify-center",
+                          quizResult.passed
+                            ? "bg-emerald-100 text-emerald-600"
+                            : "bg-rose-100 text-rose-600",
+                        )}
+                      >
+                        {quizResult.passed ? (
+                          <Check className="w-10 h-10" />
+                        ) : (
+                          <XCircle className="w-10 h-10" />
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-3xl font-black">
+                          {quizResult.passed ? "Passed!" : "Keep Trying!"}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          You scored {quizResult.score} out of{" "}
+                          {quizResult.totalScore}
+                        </p>
+                      </div>
+                      <div className="flex justify-center gap-4">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "rounded-full px-6 py-2 text-lg font-bold",
+                            quizResult.passed
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : "border-rose-200 bg-rose-50 text-rose-700",
+                          )}
+                        >
+                          {Math.round(quizResult.percentage)}%
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Detailed Report */}
+                    <div className="space-y-6">
+                      <h4 className="text-xl font-bold">Review Your Answers</h4>
+                      {quizResult.answers.map((answer: any, idx: number) => (
+                        <div
+                          key={answer.id}
+                          className={cn(
+                            "p-6 rounded-2xl border space-y-4",
+                            answer.isCorrect
+                              ? "bg-emerald-50/30 border-emerald-100"
+                              : "bg-rose-50/30 border-rose-100",
+                          )}
+                        >
+                          <div className="flex justify-between gap-4">
+                            <div className="flex gap-3">
+                              <span
+                                className={cn(
+                                  "shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm",
+                                  answer.isCorrect
+                                    ? "bg-emerald-100 text-emerald-600"
+                                    : "bg-rose-100 text-rose-600",
+                                )}
+                              >
+                                {idx + 1}
+                              </span>
+                              <h5 className="font-semibold pt-0.5">
+                                {answer.question.question}
+                              </h5>
+                            </div>
+                            {answer.isCorrect ? (
+                              <Check className="w-5 h-5 text-emerald-600 shrink-0" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                            )}
+                          </div>
+
+                          <div className="grid gap-2 ml-11">
+                            {answer.question.options.map(
+                              (option: string, oIdx: number) => {
+                                const isSelected =
+                                  answer.selectedAnswer === oIdx;
+                                const isCorrect =
+                                  answer.question.correctAnswer === oIdx;
+                                return (
+                                  <div
+                                    key={oIdx}
+                                    className={cn(
+                                      "p-3 rounded-xl border text-sm flex justify-between items-center",
+                                      isCorrect
+                                        ? "bg-emerald-100 border-emerald-200 text-emerald-800 font-medium"
+                                        : isSelected
+                                          ? "bg-rose-100 border-rose-200 text-rose-800 font-medium"
+                                          : "bg-white/50 border-border text-muted-foreground",
+                                    )}
+                                  >
+                                    <span>{option}</span>
+                                    {isCorrect && (
+                                      <span className="text-[10px] uppercase font-bold bg-emerald-200 px-2 py-0.5 rounded">
+                                        Correct
+                                      </span>
+                                    )}
+                                    {!isCorrect && isSelected && (
+                                      <span className="text-[10px] uppercase font-bold bg-rose-200 px-2 py-0.5 rounded">
+                                        Your Answer
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              },
+                            )}
+                          </div>
+
+                          {answer.question.explanation && (
+                            <div className="ml-11 p-4 rounded-xl bg-blue-50/50 border border-blue-100 text-sm text-blue-800 italic">
+                              <strong>Explanation:</strong>{" "}
+                              {answer.question.explanation}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      className="w-full h-12 rounded-full font-bold"
+                      onClick={() => {
+                        setQuizResult(null);
+                        setQuizAnswers({});
+                      }}
+                    >
+                      Try Quiz Again
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="bg-card border border-border rounded-2xl p-6 md:p-8 space-y-8 shadow-sm">
+                    <div className="space-y-2 border-b border-border pb-6">
+                      <h3 className="text-2xl font-black text-foreground">
+                        {currentLesson.quiz.title}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {currentLesson.quiz.description}
+                      </p>
+                      <div className="flex items-center gap-4 pt-2">
+                        <Badge
+                          variant="outline"
+                          className="rounded-full px-4 py-1 border-primary/20 text-primary bg-primary/5"
+                        >
+                          Passing Score: {currentLesson.quiz.passingScore}%
+                        </Badge>
+                        <Badge
+                          variant="outline"
+                          className="rounded-full px-4 py-1 border-border bg-muted/50"
+                        >
+                          Type: {currentLesson.quiz.type}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="space-y-8">
+                      {currentLesson.quiz.questions?.map((q, idx) => (
+                        <div key={q.id} className="space-y-4">
+                          <div className="flex gap-3">
+                            <span className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                              {idx + 1}
+                            </span>
+                            <h4 className="text-lg font-semibold pt-0.5">
+                              {q.question}
+                            </h4>
+                          </div>
+                          <div className="grid gap-3 ml-11">
+                            {q.options.map((option, oIdx) => {
+                              const isSelected = quizAnswers[q.id] === oIdx;
+                              return (
+                                <button
+                                  key={oIdx}
+                                  disabled={isSubmittingQuiz}
+                                  onClick={() => handleSelectAnswer(q.id, oIdx)}
+                                  className={cn(
+                                    "flex items-center justify-between p-4 rounded-xl border transition-all text-left group",
+                                    !isSelected
+                                      ? "bg-primary/5 shadow-sm shadow-primary/10"
+                                      : "bg-muted/30 border-primary hover:border-primary/50 hover:bg-muted/50",
+                                  )}
+                                >
+                                  <span
+                                    className={cn(
+                                      "font-medium transition-colors",
+                                      isSelected
+                                        ? "text-primary"
+                                        : "text-muted-foreground group-hover:text-foreground",
+                                    )}
+                                  >
+                                    {option}
+                                  </span>
+                                  <div
+                                    className={cn(
+                                      "w-5 h-5 rounded-full border flex items-center justify-center transition-colors ml-auto",
+                                      isSelected
+                                        ? "bg-primary border-primary"
+                                        : "border-muted-foreground/30",
+                                    )}
+                                  >
+                                    {isSelected && (
+                                      <Check className="w-3 h-3 text-white" />
+                                    )}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+
+                      {(!currentLesson.quiz.questions ||
+                        currentLesson.quiz.questions.length === 0) && (
+                        <p className="text-center py-10 text-muted-foreground italic bg-muted/20 rounded-xl border border-dashed border-border">
+                          No questions available for this quiz.
+                        </p>
+                      )}
+
+                      <Button
+                        className="w-full h-12 bg-primary hover:bg-primary/90 rounded-full font-bold shadow-lg shadow-primary/20 mt-8"
+                        onClick={() => handleQuizSubmit(currentLesson.quiz!.id)}
+                        disabled={
+                          isSubmittingQuiz ||
+                          !currentLesson.quiz.questions ||
+                          currentLesson.quiz.questions.length === 0
+                        }
+                      >
+                        {isSubmittingQuiz ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Submitting Attempt...
+                          </>
+                        ) : (
+                          "Submit Quiz Attempt"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+            )}
 
             <TabsContent value="notes" className="mt-4">
               <div className="rounded-xl border border-border p-4">
@@ -368,7 +736,7 @@ export default function CourseViewer() {
         animate={{ x: sidebarOpen ? 0 : 100, opacity: sidebarOpen ? 1 : 0 }}
         className={cn(
           "fixed right-0 top-0 bottom-0 w-96 border-l border-border bg-card z-40",
-          !sidebarOpen && "pointer-events-none"
+          !sidebarOpen && "pointer-events-none",
         )}
       >
         <div className="h-14 border-b border-border flex items-center justify-between px-4">
@@ -386,63 +754,120 @@ export default function CourseViewer() {
           <div className="p-4">
             <Accordion
               type="multiple"
-              defaultValue={course.modules?.map((m: any) => m.id) || []}
+              defaultValue={course.sections?.map((s) => s.id)}
               className="space-y-2"
             >
-              {course.modules?.map((module: any) => (
+              {course.sections?.map((section) => (
                 <AccordionItem
-                  key={module.id}
-                  value={module.id}
+                  key={section.id}
+                  value={section.id}
                   className="border border-border rounded-xl overflow-hidden"
                 >
                   <AccordionTrigger className="px-4 py-3 hover:bg-secondary/50 hover:no-underline">
-                    <div className="flex items-center gap-3 text-left">
-                      <div className="text-sm font-medium">{module.title}</div>
+                    <div className="flex flex-col items-start gap-1 text-left">
+                      <div className="text-sm font-bold">{section.title}</div>
+                      <div className="text-xs text-muted-foreground font-medium">
+                        {section.lessons.length} Lessons
+                      </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pb-0">
                     <div className="border-t border-border">
-                      {module.lessons?.map((lesson: any) => {
+                      {section.lessons?.map((lesson) => {
                         const isCurrent = lesson.id === currentLessonId;
-                        const isCompleted = isLessonCompleted(lesson.id);
+                        const isCompleted = completedLessonIds.includes(
+                          lesson.id,
+                        );
                         return (
                           <div
                             key={lesson.id}
-                            onClick={() => setCurrentLessonId(lesson.id)}
-                            className={cn(
-                              "flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors cursor-pointer border-b border-border last:border-0",
-                              isCurrent &&
-                                "bg-primary/5 border-l-2 border-l-primary"
-                            )}
+                            className="border-b border-border last:border-0"
                           >
-                            <div className="shrink-0">
-                              {isCompleted ? (
-                                <div className="h-6 w-6 rounded-full bg-emerald/20 flex items-center justify-center">
-                                  <Check className="h-4 w-4 text-emerald" />
-                                </div>
-                              ) : (
-                                <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
-                                  <Play className="h-3 w-3 text-primary" />
-                                </div>
+                            <div
+                              onClick={() => handleLessonSelect(lesson.id)}
+                              className={cn(
+                                "flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors cursor-pointer",
+                                isCurrent &&
+                                  "bg-primary/5 border-l-2 border-l-primary",
+                              )}
+                            >
+                              <div className="shrink-0">
+                                {isCompleted ? (
+                                  <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                                    <Check className="h-4 w-4 text-emerald-600" />
+                                  </div>
+                                ) : (
+                                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Play className="h-3 w-3 text-primary" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p
+                                  className={cn(
+                                    "text-sm font-medium truncate",
+                                    isCurrent
+                                      ? "text-primary"
+                                      : "text-foreground",
+                                  )}
+                                >
+                                  {lesson.title}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {lesson.duration
+                                    ? `${lesson.duration} min`
+                                    : "No duration"}
+                                </p>
+                              </div>
+                              {isCurrent && (
+                                <Badge
+                                  variant="secondary"
+                                  className="shrink-0 text-[10px] h-5 bg-primary/10 text-primary border-none"
+                                >
+                                  Playing
+                                </Badge>
                               )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <p
+
+                            {/* Quiz Indicator in Sidebar */}
+                            {lesson.quiz && (
+                              <div
                                 className={cn(
-                                  "text-sm truncate",
-                                  isCompleted && "text-muted-foreground"
+                                  "flex items-center gap-3 pl-12 pr-4 py-2 hover:bg-secondary/50 transition-colors cursor-pointer group",
+                                  isCurrent &&
+                                    searchParams.get("tab") === "quiz" &&
+                                    "bg-primary/5",
                                 )}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleLessonSelect(lesson.id);
+                                  const url = new URL(window.location.href);
+                                  url.searchParams.set("lessonId", lesson.id);
+                                  url.searchParams.set("tab", "quiz");
+                                  router.push(url.search);
+                                }}
                               >
-                                {lesson.title}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {lesson.duration || 0} min
-                              </p>
-                            </div>
-                            {isCurrent && (
-                              <Badge variant="secondary" className="shrink-0">
-                                Current
-                              </Badge>
+                                <HelpCircle
+                                  className={cn(
+                                    "h-4 w-4",
+                                    isCurrent &&
+                                      searchParams.get("tab") === "quiz"
+                                      ? "text-primary"
+                                      : "text-muted-foreground",
+                                  )}
+                                />
+                                <span
+                                  className={cn(
+                                    "text-xs font-medium",
+                                    isCurrent &&
+                                      searchParams.get("tab") === "quiz"
+                                      ? "text-primary"
+                                      : "text-muted-foreground group-hover:text-foreground",
+                                  )}
+                                >
+                                  Lesson Quiz
+                                </span>
+                              </div>
                             )}
                           </div>
                         );
