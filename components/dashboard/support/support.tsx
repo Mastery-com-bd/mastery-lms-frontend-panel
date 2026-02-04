@@ -129,12 +129,12 @@ const Support = ({
                 {items.map((ticket) => (
                   <div
                     key={ticket.id}
-                    className="bg-card border border-border p-6 md:p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow group relative"
+                    className="bg-card border border-border p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow group relative"
                   >
                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                       <div className="space-y-4 flex-1">
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground font-medium">
-                          <span className="bg-muted px-2 py-0.5 rounded text-[10px]">
+                          <span className="bg-muted px-2 py-0.5 text-slate-50 font-semibold">
                             #{ticket.id.slice(-6).toUpperCase()}
                           </span>
                           <span className="text-foreground/80 font-bold">
@@ -168,7 +168,7 @@ const Support = ({
                               ticket.status === "OPEN" ||
                               ticket.status === "IN_PROGRESS"
                                 ? "bg-green-100 text-green-600"
-                                : "bg-muted text-muted-foreground"
+                                : "bg-muted "
                             }`}
                           >
                             {ticket.status}

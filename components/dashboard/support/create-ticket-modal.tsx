@@ -19,12 +19,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { showError, showSuccess } from "@/lib/toast";
+import { showError, showLoading, showSuccess } from "@/lib/toast";
 import { createSupport } from "@/service/support";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { EnrollmentWithCourse } from "./support";
+import { useRouter } from "next/navigation";
 
 export function CreateTicketModal({
   enrollmentsWithCourses,
@@ -43,21 +44,25 @@ export function CreateTicketModal({
     description: "",
     priority: "MEDIUM",
   });
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.enrollmentId || !formData.subject || !formData.description) {
-      toast.error("Please fill in all required fields");
+      showError({ message: "Please fill in all required fields" });
       return;
     }
     setLoading(true);
 
+    showLoading("Creating support request...");
     const response = await createSupport({ payload: formData });
     if (response.success) {
+      toast.dismiss();
+      router.refresh();
       showSuccess({
         message: response.message || "Support request created successfully",
       });
-      setOpen(false);                                                                                                                                                                                                                               
+      setOpen(false);
       setFormData({
         enrollmentId: "",
         subject: "",
@@ -67,6 +72,8 @@ export function CreateTicketModal({
       setLoading(false);
       onSuccess?.();
     } else {
+      router.refresh();
+      toast.dismiss();
       setLoading(false);
       showError({
         message: response.message || "Failed to create support request",
@@ -80,11 +87,7 @@ export function CreateTicketModal({
       <DialogContent className="sm:max-w-125 rounded-none border-border">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-foreground">
-          {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                "Create New Ticket"
-              )}  
+            Create New Ticket
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-6 py-4">
@@ -172,6 +175,7 @@ export function CreateTicketModal({
           </div>
           <DialogFooter className="pt-4">
             <Button
+              disabled={loading}
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
@@ -180,9 +184,11 @@ export function CreateTicketModal({
               Cancel
             </Button>
             <Button
+              disabled={loading}
               type="submit"
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-none font-bold px-8 min-w-35"
             >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : ""}
               Submit Ticket
             </Button>
           </DialogFooter>

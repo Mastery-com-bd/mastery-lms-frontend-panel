@@ -3,9 +3,6 @@
 
 import { getAccesstoken } from "../auth";
 
-
-
-
 export const getMe = async () => {
   const token = (await getAccesstoken()) as string;
   try {
@@ -17,15 +14,15 @@ export const getMe = async () => {
           Authorization: token,
         },
         next: {
-          tags: ["getMe"],
+          tags: ["getawerMe"],
           revalidate: 30,
         },
       },
     );
     const result = await res.json();
-     console.log("Get Me Response: ", result);
     return result;
   } catch (error: any) {
     return Error(error);
   }
 };
+
