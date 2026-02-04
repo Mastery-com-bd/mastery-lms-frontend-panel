@@ -15,7 +15,7 @@ export const getMyCourses = async () => {
           Authorization: token,
         },
         next: {
-          tags: ["Course"],
+          tags: ["MyCourses"],
           revalidate: 30,
         },
       },

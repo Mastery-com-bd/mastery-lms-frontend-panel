@@ -22,14 +22,36 @@ interface QueryType {
   };
 }
 
+interface Subject {
+  id: string;
+  name: string;
+}
+
 const CoursesSearch = ({ setQuery }: { setQuery: (query: QueryType) => void }) => {
   const [search, setSearch] = useState("");
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [filters, setFilters] = useState({
     subject: "",
     category: "",
     language: "",
     sort: "newest",
   });
+
+  // Fetch subjects on mount
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/subject`);
+        const result = await res.json();
+        if (result.success) {
+          setSubjects(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   // Debounce search and filters logging
   useEffect(() => {
@@ -87,11 +109,16 @@ const CoursesSearch = ({ setQuery }: { setQuery: (query: QueryType) => void }) =
           {/* Filter Bar */}
           <div className="flex items-center justify-center gap-3">
             {[
-              { key: "subject", label: "Subject", options: ["all", "Math", "Science", "Arts", "Business"] },
-              // { key: "category", label: "Category", options: ["Design", "Development", "Marketing"] },
-              { key: "language", label: "Language", options: ["all", "ENGLISH", "BENGALI", "SPANISH"] },
-              // { key: "availability", label: "Availability", options: ["All", "Available", "Upcoming"] },
-              // { key: "learningType", label: "Learning Type", options: ["Online", "Offline", "Hybrid"] },
+              { 
+                key: "subject", 
+                label: "Subject", 
+                options: ["all", ...subjects.map(s => s.name)] 
+              },
+              { 
+                key: "language", 
+                label: "Language", 
+                options: ["all", "ENGLISH", "BENGALI", "SPANISH"] 
+              },
             ].map((filter) => (
               <Select
                 key={filter.key}
@@ -104,7 +131,7 @@ const CoursesSearch = ({ setQuery }: { setQuery: (query: QueryType) => void }) =
                   {filter.options.map((opt) => (
                     <SelectItem 
                       key={opt} 
-                      value={opt.toUpperCase()}
+                      value={opt === "all" ? "all" : opt.toUpperCase()}
                       className="py-3 px-4 font-medium focus:bg-[#fff1f1] focus:text-[#CC0000] cursor-pointer"
                     >
                       {opt}

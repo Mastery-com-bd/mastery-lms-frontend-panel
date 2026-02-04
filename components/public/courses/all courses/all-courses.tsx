@@ -86,9 +86,7 @@ const AllCoueses = () => {
           />
         ))}
       </div>
-      <div className="px-10">
-        {JSON.stringify(meta)}
-      </div>
+
       {/* Pagination */}
       {meta.total > 1 && (
         <PaginatioComponent
