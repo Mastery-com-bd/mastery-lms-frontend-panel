@@ -1,5 +1,5 @@
 import Settings from "@/components/dashboard/settings/Settings";
-import { getPaymentHistory } from "@/service/settings";
+import { getPaymentHistory } from "@/service/dashboard/settings";
 
 const Page = async () => {
   const response = await getPaymentHistory();

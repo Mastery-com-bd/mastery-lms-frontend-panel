@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { getAccesstoken } from "../auth";
+import { getAccesstoken } from "@/service/auth";
 
 
 export const getPaymentHistory = async () => {

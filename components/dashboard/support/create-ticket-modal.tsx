@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { showError, showLoading, showSuccess } from "@/lib/toast";
-import { createSupport } from "@/service/support";
+import { createSupport } from "@/service/dashboard/support";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";

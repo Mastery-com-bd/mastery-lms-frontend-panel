@@ -26,3 +26,26 @@ export const getMyCourses = async () => {
     return Error(error);
   }
 };
+
+export const profileStats = async () => {
+  const token = (await getAccesstoken()) as string;
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url}/reports/student`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+        next: {
+          tags: ["ProfileStats"],
+          revalidate: 30,
+        },
+      },
+    );
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};

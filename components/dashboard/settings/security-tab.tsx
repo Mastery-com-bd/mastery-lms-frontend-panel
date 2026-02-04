@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { showError, showLoading, showSuccess } from "@/lib/toast";
-import { changePassword } from "@/service/settings";
+import { changePassword } from "@/service/dashboard/settings";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

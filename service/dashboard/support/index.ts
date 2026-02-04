@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { getAccesstoken } from "../auth";
+import { getAccesstoken } from "@/service/auth";
+
 
 export const getSupportRequests = async () => {
   const token = (await getAccesstoken()) as string;

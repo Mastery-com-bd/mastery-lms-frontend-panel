@@ -1,5 +1,5 @@
 import Support from "@/components/dashboard/support/support";
-import { enrollmentWithCourse, getSupportRequests } from "@/service/support";
+import { enrollmentWithCourse, getSupportRequests } from "@/service/dashboard/support";
 
 const Page = async () => {
   const supportRequests = await getSupportRequests();
