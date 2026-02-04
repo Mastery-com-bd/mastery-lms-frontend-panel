@@ -5,63 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { LiveClassProps } from "@/type/dashboard/live-class";
 import { format, isToday } from "date-fns";
 import { Calendar, Clock, Users, Video } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
 
-interface LiveClassData {
-  id: string;
-  title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  meetingUrl: string;
-  meetingId: string;
-  meetingPassword?: string;
-  attendees: any[];
-  course: {
-    id: string;
-    title: string;
-  };
-  instructor: {
-    id: string;
-    fullName: string;
-    profilePhoto: string | null;
-  };
-  isActive: boolean;
-  isRecorded: boolean;
-}
-
-const LiveClass = () => {
-  const [liveClasses, setLiveClasses] = useState<LiveClassData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLiveClasses = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/live-class/my-live-classes`,
-          {
-            method: "GET",
-            credentials: "include",
-          },
-        );
-        const result = await res.json();
-        if (result.success) {
-          setLiveClasses(result.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch live classes:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLiveClasses();
-  }, []);
-
+const LiveClass = ({ liveClasses }: { liveClasses: LiveClassProps }) => {
   const getStatus = (startTime: string, endTime: string) => {
     const now = new Date();
     const start = new Date(startTime);
@@ -88,12 +37,8 @@ const LiveClass = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-100 rounded-2xl bg-muted animate-pulse" />
-          ))
-        ) : liveClasses.length > 0 ? (
-          liveClasses.map((liveClass, index) => {
+        {liveClasses.data.length > 0 ? (
+          liveClasses.data.map((liveClass, index) => {
             const status = getStatus(liveClass.startTime, liveClass.endTime);
             const isStartToday = isToday(new Date(liveClass.startTime));
             const canJoin =
