@@ -49,7 +49,7 @@ const AllCoueses = () => {
   useEffect(() => {
     const getCourses = async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/course?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language && query.filter.language !== "ALL" ? `&language=${query.filter.language}` : ""}${query.filter.subject && query.filter.subject !== "ALL" ? `&subject=${query.filter.subject}` : ""}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/course/published?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language && query.filter.language !== "ALL" ? `&language=${query.filter.language}` : ""}${query.filter.subject && query.filter.subject !== "ALL" ? `&subject=${query.filter.subject}` : ""}`,
         {
           method: "GET",
         },
