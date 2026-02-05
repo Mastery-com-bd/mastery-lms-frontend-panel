@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { config } from "@/config";
-import { getAccesstoken } from "../auth";
+import { getAccesstoken } from "@/service/auth";
 
-export const getMyCourses = async () => {
+
+export const getMyWishlist = async () => {
   const token = (await getAccesstoken()) as string;
   try {
     const res = await fetch(
-      `${config.next_public_server_url}/enrollment/my-enrollments`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/wishlist`,
       {
         method: "GET",
         headers: {
           Authorization: token,
         },
         next: {
-          tags: ["MyCourses"],
+          tags: ["MyWishlist"],
           revalidate: 30,
         },
       },
@@ -27,18 +27,18 @@ export const getMyCourses = async () => {
   }
 };
 
-export const profileStats = async () => {
+export const removeFromWishlist = async (courseId: string) => {
   const token = (await getAccesstoken()) as string;
   try {
     const res = await fetch(
-      `${config.next_public_server_url}/reports/student`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/wishlist/${courseId}`,
       {
-        method: "GET",
+        method: "DELETE",
         headers: {
           Authorization: token,
         },
         next: {
-          tags: ["ProfileStats"],
+          tags: ["MyWishlist"],
           revalidate: 30,
         },
       },

@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { showError, showSuccess } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { markLessonAsCompleted } from "@/service/dashboard/my-class";
 import {
   BookOpen,
   Check,
@@ -83,12 +84,11 @@ interface Course {
   sections: Section[];
 }
 
-export default function CourseViewer({ courseId }: { courseId: string }) {
+export default function CourseViewer({ course }: { course: Course }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentLessonId = searchParams.get("lessonId");
 
-  const [course, setCourse] = useState<Course | null>(null);
   const [currentLessonData, setCurrentLessonData] = useState<Lesson | null>(
     null,
   );
@@ -106,17 +106,10 @@ export default function CourseViewer({ courseId }: { courseId: string }) {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/course/${courseId}`,
-        );
-        const { data } = await res.json();
-        setCourse(data);
-
-        console.log("Course Details: ", data);
 
         // Auto-select first lesson if none selected
-        if (!currentLessonId && data?.sections?.[0]?.lessons?.[0]) {
-          const firstLessonId = data.sections[0].lessons[0].id;
+        if (!currentLessonId && course?.sections?.[0]?.lessons?.[0]) {
+          const firstLessonId = course.sections[0].lessons[0].id;
           router.replace(`?lessonId=${firstLessonId}`);
         }
       } catch (error) {
@@ -127,7 +120,7 @@ export default function CourseViewer({ courseId }: { courseId: string }) {
     };
 
     fetchCourse();
-  }, [courseId, currentLessonId, router]);
+  }, [course.sections, currentLessonId, router]);
 
   // Fetch Lesson Details
   useEffect(() => {
@@ -138,7 +131,6 @@ export default function CourseViewer({ courseId }: { courseId: string }) {
           `${process.env.NEXT_PUBLIC_SERVER_URL}/lesson/${currentLessonId}`,
         );
         const { data } = await res.json();
-        console.log("Lesson Details: ", data);
         setCurrentLessonData(data);
       } catch (error) {
         console.error("Error fetching lesson:", error);
@@ -248,7 +240,7 @@ export default function CourseViewer({ courseId }: { courseId: string }) {
     router.push(`?lessonId=${lessonId}`);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!currentLessonData?.id) return;
     handleLessonComplete(currentLessonData?.id, true);
     if (currentLessonId && !completedLessonIds.includes(currentLessonId)) {
@@ -256,26 +248,11 @@ export default function CourseViewer({ courseId }: { courseId: string }) {
     }
 
     if (
+      currentLessonId &&
       currentLessonData &&
       !currentLessonData.watchedLessons?.[0]?.isCompleted
     ) {
-      fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/lesson/${currentLessonId}/watch`,
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Lesson Completion Response:", data);
-          if (data.success) {
-            showSuccess({ message: "Lesson completed successfully" });
-          }
-        })
-        .catch(() => {
-          showError({ message: "Error completing lesson" });
-        });
+      markLessonAsCompleted({ lessonId: currentLessonId });
     }
 
     if (currentIndex < allLessons.length - 1) {
@@ -792,7 +769,8 @@ export default function CourseViewer({ courseId }: { courseId: string }) {
                               )}
                             >
                               <div className="shrink-0">
-                                {isCompleted ? (
+                                {isCompleted ||
+                                lesson.watchedLessons[0]?.isCompleted ? (
                                   <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center">
                                     <Check className="h-4 w-4 text-emerald-600" />
                                   </div>

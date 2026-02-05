@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { showError, showLoading, showSuccess } from "@/lib/toast";
+import { changePassword } from "@/service/dashboard/settings";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -37,34 +38,24 @@ const SecurityTab = () => {
 
     try {
       showLoading("Changing password...");
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/change-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            oldPassword: passwords.current,
-            newPassword: passwords.new,
-          }),
-        },
-      );
+      const payload = {
+        oldPassword: passwords.current.trim(),
+        newPassword: passwords.new.trim(),
+      }
 
-      const json = await res.json();
+      const result = await changePassword(payload);
 
-      if (json.success) {
+      if (result.success) {
         toast.dismiss();
         showSuccess({
-          message: json.message || "Password changed successfully",
+          message: result.message || "Password changed successfully",
         });
         // Optionally clear form
         setPasswords({ current: "", new: "", confirm: "" });
       } else {
         toast.dismiss();
         // Display backend error message
-        showError({ message: json.message || "Failed to change password" });
+        showError({ message: result.message || "Failed to change password" });
       }
     } catch (err) {
       console.error(err);

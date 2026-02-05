@@ -1,9 +1,12 @@
 import WishlistPage from "@/components/dashboard/wishlist/wishlist-page";
+import { getMyWishlist } from "@/service/dashboard/wishlist";
 
 const Page = async () => {
+  const myWishlist = await getMyWishlist();
+
   return (
     <div>
-      <WishlistPage />
+      <WishlistPage wishlist={myWishlist} />
     </div>
   );
 };

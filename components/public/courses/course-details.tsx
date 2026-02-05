@@ -8,17 +8,18 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { showError, showLoading, showSuccess } from "@/lib/toast";
+import { getCourseById } from "@/lib/data-layer/public";
+import { showSuccess } from "@/lib/toast";
 import {
   BarChart,
   BookOpen,
   Calendar,
-  CheckCircle2,
   Clock,
   Copy,
   DollarSign,
   Facebook,
   Layers,
+  Loader2,
   Mail,
   MessageCircle,
   PlayCircle,
@@ -28,29 +29,49 @@ import {
   Users,
 } from "lucide-react";
 import Image from "next/image";
-import RelatedCourses from "./related-courses";
-import { useEffect, useState } from "react";
-import { getCourseById } from "@/lib/data-layer/public";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import RelatedCourses from "./related-courses";
 
 interface Lesson {
   id: string;
   title: string;
   duration: number | null;
-  isPreview: boolean;
+  quiz: {
+    id: string;
+    title: string;
+  } | null;
 }
 
 interface Section {
   id: string;
   title: string;
-  description: string;
+  order: number;
   lessons: Lesson[];
 }
 
 interface CourseData {
   id: string;
   title: string;
+
+  learnings: {
+    content: string;
+    courseId: string;
+    createdAt: string;
+    id: string;
+    isActive: boolean;
+    order: number;
+    updatedAt: string;
+  }[];
+  requirements: {
+    content: string;
+    courseId: string;
+    createdAt: string;
+    id: string;
+    isActive: boolean;
+    order: number;
+    updatedAt: string;
+  }[];
   subtitle: string;
   description: string;
   thumbnail: string;
@@ -71,11 +92,13 @@ const CourseDetails = ({ id }: { id: string }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // Fetch course details on component mount
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const response = await getCourseById(id);
         if (response.success) {
+          console.log("Course Details: ", response);
           setCourse(response.data);
         }
       } catch (error) {
@@ -114,11 +137,9 @@ const CourseDetails = ({ id }: { id: string }) => {
     ? Math.round(((course.price - course.discountPrice) / course.price) * 100)
     : 0;
 
-    
-
-    const handleWishList = (courseId: string) => {
-      console.log(courseId)
-    }
+  const handleWishList = (courseId: string) => {
+    console.log(courseId);
+  };
 
   return (
     <div className="bg-white min-h-screen pb-20">
@@ -154,86 +175,124 @@ const CourseDetails = ({ id }: { id: string }) => {
             {/* Tabs Section */}
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="w-full justify-start border-b rounded-none bg-transparent h-auto p-0 mb-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                {["Overview", "Curriculum", "Instructor", "Reviews"].map(
-                  (tab) => (
-                    <TabsTrigger
-                      key={tab}
-                      value={tab.toLowerCase()}
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#CC0000] data-[state=active]:text-[#CC0000] px-4 sm:px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold bg-transparent inline-block"
-                    >
-                      {tab}
-                    </TabsTrigger>
-                  ),
-                )}
+                {["Overview", "Curriculum", "Reviews"].map((tab) => (
+                  <TabsTrigger
+                    key={tab}
+                    value={tab.toLowerCase()}
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#CC0000] data-[state=active]:text-[#CC0000] px-4 sm:px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold bg-transparent inline-block"
+                  >
+                    {tab}
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
               <TabsContent value="overview" className="space-y-12">
-                <div className="prose max-w-none">
-                  <h3 className="text-2xl font-bold mb-4">Description</h3>
-                  <div
-                    className="text-gray-600 leading-relaxed text-lg"
-                    dangerouslySetInnerHTML={{ __html: course.description }}
-                  />
-                </div>
-
-                <div className="bg-green-50/50 border border-green-100 rounded-2xl p-8">
-                  <h3 className="text-xl font-bold mb-6">
-                    What you will learn in this course
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Map actual learning points if available in API, otherwise keep placeholders */}
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-green-500 mt-1 shrink-0" />
-                        <span className="text-gray-700">
-                          Comprehensive mastery of {course.title} concepts.
-                        </span>
-                      </div>
-                    ))}
+                {/* What You'll Learn */}
+                {course.learnings.length > 0 && (
+                  <div>
+                    <ul className="space-y-3">
+                      {course.learnings.map((learning) => (
+                        <li
+                          key={learning.id}
+                          className="flex items-start gap-3"
+                        >
+                          <span
+                            className="text-gray-700"
+                            dangerouslySetInnerHTML={{
+                              __html: learning.content,
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
+                )}
+
+                {/* Requirements */}
+                {course.requirements.length > 0 && (
+                  <div>
+                    <ul className="space-y-3">
+                      {course.requirements.map((requirement) => (
+                        <li
+                          key={requirement.id}
+                          className="flex items-start gap-3"
+                        >
+                          <span
+                            className="text-gray-700"
+                            dangerouslySetInnerHTML={{
+                              __html: requirement.content,
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="curriculum">
                 <Accordion type="single" collapsible className="space-y-4 my-4">
-                  {course.sections.map((section) => (
-                    <AccordionItem
-                      key={section.id}
-                      value={section.id}
-                      className="border rounded-xl px-4"
-                    >
-                      <AccordionTrigger className="hover:no-underline py-6">
-                        <div className="flex justify-between w-full pr-4">
-                          <span className="font-bold text-lg text-left">
-                            {section.title}
-                          </span>
-                          <span className="text-gray-500 text-sm shrink-0 ml-4">
-                            {section.lessons.length} Lectures
-                          </span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="space-y-4 pb-6">
-                        {section.lessons.map((lesson) => (
-                          <div
-                            key={lesson.id}
-                            className="flex items-center justify-between py-2 border-t first:border-0"
-                          >
-                            <div className="flex items-center gap-3">
-                              <PlayCircle className="w-4 h-4 text-gray-400" />
-                              <span className="text-gray-600">
-                                {lesson.title}
-                              </span>
-                            </div>
-                            <span className="text-gray-400 text-sm">
-                              {lesson.duration
-                                ? `${lesson.duration} min`
-                                : "---"}
+                  {course.sections
+                    .sort((a, b) => a.order - b.order)
+                    .map((section) => (
+                      <AccordionItem
+                        key={section.id}
+                        value={section.id}
+                        className="border rounded-xl px-4"
+                      >
+                        <AccordionTrigger className="hover:no-underline py-6">
+                          <div className="flex justify-between w-full pr-4">
+                            <span className="font-bold text-lg text-left">
+                              {section.title}
+                            </span>
+                            <span className="text-gray-500 text-sm shrink-0 ml-4">
+                              {section.lessons.length} Items
                             </span>
                           </div>
-                        ))}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pb-6">
+                          {section.lessons.length > 0 ? (
+                            section.lessons.map((lesson) => (
+                              <div
+                                key={lesson.id}
+                                className="space-y-3 py-2 border-t first:border-0"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <PlayCircle className="w-4 h-4 text-gray-400" />
+                                    <span className="text-gray-600 font-medium">
+                                      {lesson.title}
+                                    </span>
+                                  </div>
+                                  <span className="text-gray-400 text-sm">
+                                    {lesson.duration
+                                      ? `${lesson.duration} min`
+                                      : "---"}
+                                  </span>
+                                </div>
+                                {lesson.quiz && (
+                                  <div className="flex items-center justify-between ml-7 p-3 bg-muted/30 rounded-lg border border-border/50">
+                                    <div className="flex items-center gap-3">
+                                      <Trophy className="w-4 h-4 text-yellow-600" />
+                                      <span className="text-sm font-bold text-muted-foreground">
+                                        Quiz: {lesson.quiz.title}
+                                      </span>
+                                    </div>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-600">
+                                      Graded
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="py-4 text-center text-sm text-muted-foreground italic">
+                              No lessons in this section yet.
+                            </div>
+                          )}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
                 </Accordion>
               </TabsContent>
             </Tabs>
@@ -311,8 +370,14 @@ const CourseDetails = ({ id }: { id: string }) => {
 
               {/* Action Buttons */}
               <div className="space-y-4">
-                <Button onClick={() => router.push(`/checkout?id=${id}`)} className="w-full bg-[#CC0000] hover:bg-[#B30000] h-16 text-xl font-bold rounded-2xl shadow-lg shadow-red-100 transition-all active:scale-95">
-                  {loading ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : null} {loading ? "Enrolling..." : "Enroll Now"}
+                <Button
+                  onClick={() => router.push(`/checkout?id=${id}`)}
+                  className="w-full bg-[#CC0000] hover:bg-[#B30000] h-16 text-xl font-bold rounded-2xl shadow-lg shadow-red-100 transition-all active:scale-95"
+                >
+                  {loading ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-white" />
+                  ) : null}{" "}
+                  {loading ? "Enrolling..." : "Enroll Now"}
                 </Button>
 
                 <div className="grid grid-cols-2 gap-4">

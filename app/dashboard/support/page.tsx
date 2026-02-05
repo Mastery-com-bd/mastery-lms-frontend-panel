@@ -1,12 +1,15 @@
-import Support from '@/components/dashboard/support/support'
-import React from 'react'
+import Support from "@/components/dashboard/support/support";
+import { enrollmentWithCourse, getSupportRequests } from "@/service/dashboard/support";
 
-const Page = () => {
+const Page = async () => {
+  const supportRequests = await getSupportRequests();
+  const enrollmentsWithCourses = await enrollmentWithCourse();
+
   return (
     <div>
-        <Support />
+      <Support enrollmentsWithCourses={enrollmentsWithCourses.data} requests={supportRequests.data} />
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;

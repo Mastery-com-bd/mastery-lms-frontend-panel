@@ -1,59 +1,64 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Heart, Star, Trash2, ShoppingCart, Loader2 } from "lucide-react";
+import { showError, showLoading, showSuccess } from "@/lib/toast";
+import { removeFromWishlist } from "@/service/dashboard/wishlist";
+import { WishlistProps } from "@/type/dashboard/wishlist";
+import { Heart, Star, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
-interface WishlistResponseItem {
-  id: string;
-  course: {
-    id: string;
-    title: string;
-    thumbnail: string;
-    price: number;
-    discountPrice: number;
-    averageRating: number;
-    ratingsCount: number;
-    instructor: { name: string } | null;
-    category: {
-      name: string;
-    };
+const WishlistPage = ({ wishlist }: { wishlist: WishlistProps }) => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleRemoveFromWishlist = async (courseId: string) => {
+    setLoading(true);
+    showLoading("Removing from wishlist...");
+    const result = await removeFromWishlist(courseId);
+    if (result.success) {
+      toast.dismiss();
+      setLoading(false);
+      showSuccess({
+        message: result.message || "Successfully removed from wishlist",
+      });
+      router.refresh();
+    } else {
+      setLoading(false);
+      toast.dismiss();
+      showError({
+        message: result.message || "Failed to remove from wishlist",
+      });
+    }
   };
-}
 
-const WishlistPage = () => {
-  const [items, setItems] = useState<WishlistResponseItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const handleClearWishlist = async () => {
+    showError({
+      message: "Add Wishlist Clear API",
+    });
 
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/wishlist`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          },
-        );
-        const data = await response.json();
-        if (data.success) {
-          setItems(data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching wishlist:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchWishlist();
-  }, []);
+    // TODO: ADD Remove all item from Wishlist API call
+    // setLoading(true);
+    // showLoading("Clearing wishlist...");
+    // const result = await removeFromWishlist("all");
+    // if (result.success) {
+    //   toast.dismiss();
+    //   setLoading(false);
+    //   showSuccess({
+    //     message: result.message || "Successfully cleared wishlist",
+    //   });
+    //   router.refresh();
+    // } else {
+    //   setLoading(false);
+    //   toast.dismiss();
+    //   showError({
+    //     message: result.message || "Failed to clear wishlist",
+    //   });
+    // }
+  };
 
   return (
     <div className="p-6 space-y-8 min-h-screen bg-background">
@@ -61,19 +66,24 @@ const WishlistPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">My Wishlist</h1>
-          {!isLoading && (
-            <p className="text-muted-foreground mt-1">
-              You have <span className="text-primary font-semibold">{items.length} courses</span> saved for later.
-            </p>
-          )}
+
+          <p className="text-muted-foreground mt-1">
+            You have{" "}
+            <span className="text-primary font-semibold">
+              {wishlist.data.length} courses
+            </span>{" "}
+            saved for later.
+          </p>
         </div>
-        {!isLoading && items.length > 0 && (
+        {wishlist.data.length > 0 && (
           <div className="flex items-center gap-3">
-            <Button variant="outline" className=" rounded-none border-border text-muted-foreground  hover:bg-primary font-semibold">
+            <Button
+              onClick={() => handleClearWishlist()}
+              disabled={loading}
+              variant="outline"
+              className=" rounded-none border-border text-muted-foreground  hover:bg-primary font-semibold"
+            >
               Clear Wishlist
-            </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground  rounded-none font-semibold px-6 shadow-lg shadow-primary/10">
-              Add All to Cart
             </Button>
           </div>
         )}
@@ -81,15 +91,10 @@ const WishlistPage = () => {
 
       {/* Wishlist Content */}
       <div className="bg-card rounded-none border border-border overflow-hidden">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4">
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            <p className="text-muted-foreground animate-pulse font-medium">Loading your wishlist...</p>
-          </div>
-        ) : (
+        {wishlist.data.length > 0 && (
           <>
             {/* Table Header (Desktop) */}
-            {items.length > 0 && (
+            {wishlist.data.length > 0 && (
               <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 border-b border-border bg-muted/30 text-[11px] font-black text-muted-foreground uppercase tracking-widest">
                 <div className="col-span-6">Course Details</div>
                 <div className="col-span-2 text-center">Price</div>
@@ -99,8 +104,8 @@ const WishlistPage = () => {
 
             {/* List Items */}
             <div className="divide-y divide-border">
-              {items.length > 0 ? (
-                items.map((item) => (
+              {wishlist.data.length > 0 ? (
+                wishlist.data.map((item) => (
                   <div
                     key={item.id}
                     className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 lg:p-8 items-center group hover:bg-accent/5 transition-all duration-300"
@@ -124,15 +129,24 @@ const WishlistPage = () => {
                         <div className="flex items-center gap-2">
                           <div className="flex items-center text-amber-500">
                             <Star className="w-4 h-4 fill-current" />
-                            <span className="ml-1 text-sm font-bold text-foreground">{item.course.averageRating}</span>
+                            <span className="ml-1 text-sm font-bold text-foreground">
+                              {item.course.averageRating}
+                            </span>
                           </div>
-                          <span className="text-muted-foreground text-xs">({item.course.ratingsCount.toLocaleString()} Reviews)</span>
+                          <span className="text-muted-foreground text-xs">
+                            ({item.course.ratingsCount.toLocaleString()}{" "}
+                            Reviews)
+                          </span>
                         </div>
                         <h3 className="font-bold text-lg text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
                           {item.course.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          By <span className="font-semibold text-foreground/80">{item.course.instructor?.name || "Expert Instructor"}</span>
+                          By{" "}
+                          <span className="font-semibold text-foreground/80">
+                            {item.course.instructor?.name ||
+                              "Expert Instructor"}
+                          </span>
                         </p>
                       </div>
                     </div>
@@ -144,16 +158,19 @@ const WishlistPage = () => {
                           ${item.course.discountPrice || item.course.price}
                         </span>
                       </div>
-                      {item.course.discountPrice > 0 && item.course.price > item.course.discountPrice && (
-                        <span className="text-sm text-muted-foreground line-through font-medium">
-                          ${item.course.price}
-                        </span>
-                      )}
+                      {item.course.discountPrice > 0 &&
+                        item.course.price > item.course.discountPrice && (
+                          <span className="text-sm text-muted-foreground line-through font-medium">
+                            ${item.course.price}
+                          </span>
+                        )}
                     </div>
 
                     {/* Actions */}
                     <div className="lg:col-span-4 flex flex-wrap lg:flex-nowrap items-center justify-start lg:justify-end gap-3">
                       <Button
+                        disabled={loading}
+                        onClick={() => handleRemoveFromWishlist(item.course.id)}
                         variant="ghost"
                         size="icon"
                         className="h-11 w-11 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
@@ -161,13 +178,7 @@ const WishlistPage = () => {
                         <Trash2 className="w-5 h-5" />
                       </Button>
                       <Button
-                        variant="ghost"
-                        className="bg-[#F5F7FA] hover:bg-primary text-primary rounded-none font-bold h-11 px-6 flex items-center gap-2 transition-all"
-                      >
-                        <ShoppingCart className="w-4 h-4" />
-                        Add To Cart
-                      </Button>
-                      <Button
+                        disabled={loading}
                         className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 px-8 rounded-none shadow-lg shadow-primary/10 flex items-center gap-2 transition-all active:scale-[0.98]"
                       >
                         Enroll Now
@@ -181,13 +192,19 @@ const WishlistPage = () => {
                     <Heart className="w-10 h-10 text-muted-foreground" />
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-foreground">Your Wishlist is Empty</h2>
+                    <h2 className="text-2xl font-bold text-foreground">
+                      Your Wishlist is Empty
+                    </h2>
                     <p className="text-muted-foreground max-w-sm mx-auto">
-                      Explore our courses and save your favorites here to start your learning journey.
+                      Explore our courses and save your favorites here to start
+                      your learning journey.
                     </p>
                   </div>
                   <Link href="/courses">
-                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 h-12 rounded-xl mt-4">
+                    <Button
+                      disabled={loading}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 h-12 rounded-xl mt-4"
+                    >
                       Browse Courses
                     </Button>
                   </Link>

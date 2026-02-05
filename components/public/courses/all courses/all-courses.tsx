@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import CoursesSearch from "./courses-search";
-import AllCourseCard from "./all-course-card";
 import PaginatioComponent from "@/components/shared/pagination";
-import CourseSupport from "./course-support";
+import { useEffect, useState } from "react";
 import RelatedCourses from "../related-courses";
-import StudentFeedback from "./student-feedback";
+import AllCourseCard from "./all-course-card";
 import CourseInstractor from "./course-instractor";
 import CourseOffer from "./course-offer";
+import CourseSupport from "./course-support";
+import CoursesSearch from "./courses-search";
+import StudentFeedback from "./student-feedback";
 
 interface CourseProps {
   id: string;
@@ -49,7 +49,7 @@ const AllCoueses = () => {
   useEffect(() => {
     const getCourses = async () => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/course?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language && query.filter.language !== "ALL" ? `&language=${query.filter.language}` : ""}${query.filter.subject && query.filter.subject !== "ALL" ? `&subject=${query.filter.subject}` : ""}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/course/published?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language && query.filter.language !== "ALL" ? `&language=${query.filter.language}` : ""}${query.filter.subject && query.filter.subject !== "ALL" ? `&subject=${query.filter.subject}` : ""}`,
         {
           method: "GET",
         },
@@ -86,9 +86,7 @@ const AllCoueses = () => {
           />
         ))}
       </div>
-      <div className="px-10">
-        {JSON.stringify(meta)}
-      </div>
+
       {/* Pagination */}
       {meta.total > 1 && (
         <PaginatioComponent

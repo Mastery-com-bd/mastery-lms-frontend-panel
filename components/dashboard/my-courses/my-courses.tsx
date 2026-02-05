@@ -34,7 +34,7 @@ const MyCourses = ({ myCourses }: { myCourses: TAllCourse[] }) => {
                   }
                   shortDescription={course?.course?.shortDescription}
                   longDescription={course?.course?.description}
-                  href={`/dashboard/my-courses/${course?.id}`}
+                  href={`/dashboard/my-courses/${course?.course?.id}`}
                 />
               </motion.div>
             ))}

@@ -1,13 +1,12 @@
-import BookCard from "./book-card";
+import BookCardV4 from "./book-cardV4";
 
 const BookPage = () => {
   return (
     <div>
-      <h1></h1>
-      <p className="text-gray-500 font-medium">All Products</p>
-      <div className="grid grid-cols-4 gap-4">
+        <h2 className=" w-full text-primary text-5xl font-bold text-center pt-10">All Products</h2>
+      <div className="grid grid-cols-3 gap-4 max-w-285 mx-auto py-20">
         {Array.from({ length: 12 }, (_, i) => (
-          <BookCard
+          <BookCardV4
             key={i}
             image={`/books/${i + 1}.jpg`}
             title={`Book ${i + 1}`}
