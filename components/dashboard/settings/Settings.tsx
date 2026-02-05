@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils";
 import AccountTab from "./account-tab";
 import PurchaseHistory from "./purchase-history-tab";
 import SecurityTab from "./security-tab";
-import { PaymentHistoryProps } from "@/type/dashboard/settings";
+import { PaymentHistoryProps, ProfileProps } from "@/type/dashboard/settings";
 
 export default function Settings({
+  profile,
   paymentHistory,
 }: {
+  profile: ProfileProps;
   paymentHistory: PaymentHistoryProps[];
 }) {
   return (
@@ -34,7 +36,7 @@ export default function Settings({
           value="account"
           className="mt-0 focus-visible:outline-none"
         >
-          <AccountTab />
+          <AccountTab profile={profile} />
         </TabsContent>
 
         {/* <TabsContent

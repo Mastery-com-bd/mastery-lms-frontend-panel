@@ -2,19 +2,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { showError, showLoading, showSuccess } from "@/lib/toast";
-import { Camera, Loader2 } from "lucide-react";
+import { updateProfile } from "@/service/dashboard/settings";
+import { ProfileProps } from "@/type/dashboard/settings";
+import { Camera, Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 interface UserResponse {
   id: string;
   email: string;
   fullName: string;
-  phoneNumber: string | null;
+  phoneNumber: string;
   profilePhoto: string | null;
   address: string | null;
-  bio: string | null;
+  bio: string;
   role: string;
   gender: string | null;
   dateOfBirth: string | null;
@@ -23,54 +25,47 @@ interface UserResponse {
   createdAt: string;
 }
 
-const AccountTab = () => {
+const AccountTab = ({ profile }: { profile: ProfileProps }) => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
 
-  const [userResponse, setUserResponse] = useState<UserResponse | null>(null);
+  const [userResponse, setUserResponse] = useState<UserResponse | null>(
+    profile.data,
+  );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
-          {
-            method: "GET",
-            credentials: "include",
-          },
-        );
-        const { data } = await res.json();
-        console.log("Auth/me response:", data);
-        setUserResponse(data);
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-      }
-    };
-    fetchData();
-  }, []);
+  console.log("User Response : ", userResponse);
 
   const handleSaveAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUpdating(true);
     showLoading("Updating...");
+
+    const formData = new FormData();
+    formData.append("fullName", userResponse?.fullName || "");
+    formData.append("phoneNumber", userResponse?.phoneNumber || "");
+    formData.append("address", userResponse?.address || "");
+    formData.append("bio", userResponse?.bio || "");
+
+    if (profilePhoto) {
+      formData.append("profilePhoto", profilePhoto);
+    }
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/user/update-my-profile`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userResponse),
-        },
-      );
-      const { data } = await res.json();
-      console.log("Update profile response:", data);
+      const res = await updateProfile(formData);
+
+      console.log("Profile Update Response :", res);
+
       toast.dismiss();
-      showSuccess({
-        message: data?.message || "Profile updated successfully",
-        duration: 3000,
-      });
+      if (res.success) {
+        showSuccess({
+          message: res?.message || "Profile updated successfully",
+          duration: 3000,
+        });
+      } else {
+        showError({
+          message: res?.message || "Error updating profile",
+          duration: 3000,
+        });
+      }
       setIsUpdating(false);
     } catch (err) {
       console.error("Error updating profile:", err);
@@ -89,29 +84,62 @@ const AccountTab = () => {
         <h2 className="text-2xl font-bold tracking-tight">Account settings</h2>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
-            <div className="border border-border p-8 bg-white flex flex-col items-center justify-center space-y-6">
+            <div className="relative border border-border p-8 bg-white flex flex-col items-center justify-center space-y-6">
+              {profilePhoto && (
+                <Button
+                  type="button"
+                  onClick={() => setProfilePhoto(null)}
+                  className="cursor-pointer absolute top-2 right-2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition"
+                  aria-label="Remove image"
+                >
+                  <Trash2 className="h-5 w-5 text-red-500" />
+                </Button>
+              )}
               <div className="relative group w-48 h-48 border border-border overflow-hidden">
-                <Image
-                  width={500}
-                  height={500}
-                  src={
-                    userResponse?.profilePhoto ||
-                    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=2574&auto=format&fit=crop"
-                  }
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                {profilePhoto ? (
+                  <>
+                    <Image
+                      width={500}
+                      height={500}
+                      src={
+                        profilePhoto ? URL.createObjectURL(profilePhoto) : ""
+                      }
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  </>
+                ) : (
+                  <Image
+                    width={500}
+                    height={500}
+                    src={
+                      userResponse?.profilePhoto ||
+                      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=2574&auto=format&fit=crop"
+                    }
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                )}
+                <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   <Camera className="text-white h-8 w-8 mb-2" />
                   <span className="text-white text-xs font-bold uppercase">
                     Upload Photo
                   </span>
-                </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) setProfilePhoto(file);
+                    }}
+                  />
+                </label>
               </div>
               <div className="text-center space-y-2">
                 <p className="text-[11px] text-muted-foreground leading-relaxed uppercase tracking-tighter">
-                  Image size should be under 1MB <br /> and image ration needs
-                  to be 1:1
+                  Image size should be under 1MB <br /> and image ratio needs to
+                  be 1:1
                 </p>
               </div>
             </div>

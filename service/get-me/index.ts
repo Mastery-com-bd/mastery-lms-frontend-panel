@@ -11,7 +11,7 @@ export const getMe = async () => {
       {
         method: "GET",
         headers: {
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         },
         next: {
           tags: ["getawerMe"],

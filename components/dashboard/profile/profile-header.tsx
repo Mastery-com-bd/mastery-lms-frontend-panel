@@ -3,7 +3,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Edit, Link as LinkIcon, Loader2, MapPin, Share2 } from "lucide-react";
+import { ProfileProps } from "@/type/dashboard/settings";
+import {
+  Calendar,
+  Edit,
+  Link as LinkIcon,
+  Loader2,
+  MapPin,
+  Share2,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -23,45 +31,10 @@ interface UserProfile {
   createdAt: string;
 }
 
-const ProfileHeader = () => {
-  const [userInfo, setUserInfo] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const ProfileHeader = ({ profile }: { profile: ProfileProps }) => {
+  const userInfo = profile.data;
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/auth/me`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-          },
-        );
-        const result = await response.json();
-        if (result.success) {
-          setUserInfo(result.data);
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-      </div>
-    );
-  }
-
-  if (!userInfo) {
+  if (!profile.success) {
     return (
       <div className="pb-20 flex flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">Failed to load profile.</p>
@@ -93,10 +66,6 @@ const ProfileHeader = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Share2 className="w-4 h-4" />
-                    Share
-                  </Button>
                   <Link href="/dashboard/settings">
                     <Button variant="gradient" size="sm" className="gap-2">
                       <Edit className="w-4 h-4" />

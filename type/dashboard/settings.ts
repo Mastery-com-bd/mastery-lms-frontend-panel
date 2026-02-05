@@ -18,3 +18,23 @@ export interface PaymentHistoryProps {
     status: string;
     enrollment: enrollment;
 }
+
+export interface ProfileProps {
+    success: boolean;
+    message: string;
+    data: {
+        id: string;
+        email: string;
+        fullName: string;
+        phoneNumber: string;
+        profilePhoto: string | null;
+        address: string | null;
+        bio: string;
+        role: string;
+        gender: string | null;
+        dateOfBirth: string | null;
+        status: string;
+        isEmailVerified: boolean;
+        createdAt: string;
+    }
+}

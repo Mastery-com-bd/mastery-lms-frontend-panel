@@ -57,3 +57,29 @@ export const changePassword = async (payload: {
   }
 };
 
+export const updateProfile = async (payload: FormData) => {
+  const token = (await getAccesstoken()) as string;
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/user/update-my-profile`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: token,
+        },
+        next: {
+          tags: ["updateProfile"],
+          revalidate: 30,
+        },
+        body: payload,
+      },
+    );
+    const result = await res.json();
+
+    console.log("Update Profile Response: ", result);
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+

@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import CoursesSearch from "./courses-search";
-import AllCourseCard from "./all-course-card";
 import PaginatioComponent from "@/components/shared/pagination";
-import CourseSupport from "./course-support";
+import { useEffect, useState } from "react";
 import RelatedCourses from "../related-courses";
-import StudentFeedback from "./student-feedback";
+import AllCourseCard from "./all-course-card";
 import CourseInstractor from "./course-instractor";
 import CourseOffer from "./course-offer";
+import CourseSupport from "./course-support";
+import CoursesSearch from "./courses-search";
+import StudentFeedback from "./student-feedback";
 
 interface CourseProps {
   id: string;
