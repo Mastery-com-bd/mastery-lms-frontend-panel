@@ -43,3 +43,58 @@ export type TAllCourse = {
   updatedAt: string;
   course: TCourse;
 };
+
+export type TFeaturedCourseMeta = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
+export type TFeaturedCourseItem = {
+  id: string;
+  title: string;
+  slug: string;
+  subtitle: string;
+  description: string;
+  shortDescription: string | null;
+  thumbnail: string | null;
+  previewVideo: string | null;
+  courseTag: string[];
+  instructorId: string | null;
+  categoryId: string;
+  subjectId: string;
+  price: number;
+  discountPrice: number | null;
+  isFeatured: boolean;
+  status: string;
+  courseLeaningType: string;
+  language: string;
+  level: string;
+  duration: string | null;
+  totalLessons: number;
+  totalQuizzes: number;
+  ratingsCount: number;
+  averageRating: number;
+  enrolledCount: number;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+  instructor: any | null;
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    iconUrl: string | null;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type TFeaturedCourse = {
+  success: true;
+  message: 'Featured courses retrieved successfully!';
+  meta: TFeaturedCourseMeta;
+  data: TFeaturedCourseItem[];
+};

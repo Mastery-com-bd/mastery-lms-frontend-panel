@@ -9,6 +9,7 @@ import CourseOffer from "./course-offer";
 import CourseSupport from "./course-support";
 import CoursesSearch from "./courses-search";
 import StudentFeedback from "./student-feedback";
+import { TFeaturedCourse } from "@/type/course.types";
 
 interface CourseProps {
   id: string;
@@ -25,7 +26,7 @@ interface CourseProps {
   };
 }
 
-const AllCoueses = () => {
+const AllCoueses = ({ featuredCourses }: { featuredCourses: TFeaturedCourse }) => {
   const [query, setQuery] = useState({
     query: "",
     filter: {
@@ -106,7 +107,7 @@ const AllCoueses = () => {
 
       {/* Related Courses */}
       <div className="px-10">
-        <RelatedCourses />
+        <RelatedCourses relatedCourses={featuredCourses} />
       </div>
 
       {/* Student Feedback */}

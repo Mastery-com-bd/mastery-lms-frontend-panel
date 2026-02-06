@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCourseById } from "@/lib/data-layer/public";
-import { showSuccess } from "@/lib/toast";
+import { showLoading, showSuccess } from "@/lib/toast";
 import {
   BarChart,
   BookOpen,
@@ -32,6 +32,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import RelatedCourses from "./related-courses";
+import { TFeaturedCourse } from "@/type/course.types";
+import { addToWishlist } from "@/service/dashboard/wishlist";
+import { toast } from "sonner";
 
 interface Lesson {
   id: string;
@@ -87,7 +90,13 @@ interface CourseData {
   sections: Section[];
 }
 
-const CourseDetails = ({ id }: { id: string }) => {
+const CourseDetails = ({
+  id,
+  relatedCourses,
+}: {
+  id: string;
+  relatedCourses: TFeaturedCourse;
+}) => {
   const [course, setCourse] = useState<CourseData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -98,7 +107,6 @@ const CourseDetails = ({ id }: { id: string }) => {
       try {
         const response = await getCourseById(id);
         if (response.success) {
-          console.log("Course Details: ", response);
           setCourse(response.data);
         }
       } catch (error) {
@@ -137,8 +145,23 @@ const CourseDetails = ({ id }: { id: string }) => {
     ? Math.round(((course.price - course.discountPrice) / course.price) * 100)
     : 0;
 
-  const handleWishList = (courseId: string) => {
-    console.log(courseId);
+  const handleWishList = async (courseId: string) => {
+    console.log("Course ID :", courseId);
+
+    showLoading("Adding to wishlist...");
+
+    const res = await addToWishlist(courseId);
+    console.log("Add to Wishlist Response :", res);
+    toast.dismiss();
+    if (res.success) {
+      showSuccess({
+        message: res.message || "Course added to wishlist",
+      });
+    } else {
+      showSuccess({
+        message: res.message || "Error adding to wishlist",
+      });
+    }
   };
 
   return (
@@ -382,6 +405,7 @@ const CourseDetails = ({ id }: { id: string }) => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Button
+                    onClick={() => handleWishList(id)}
                     variant="outline"
                     className="h-12 font-bold rounded-xl text-gray-600"
                   >
@@ -490,7 +514,7 @@ const CourseDetails = ({ id }: { id: string }) => {
       </div>
 
       {/* Related Courses */}
-      <RelatedCourses />
+      <RelatedCourses relatedCourses={relatedCourses} />
     </div>
   );
 };

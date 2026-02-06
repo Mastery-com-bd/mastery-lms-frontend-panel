@@ -27,6 +27,30 @@ export const getMyWishlist = async () => {
   }
 };
 
+export const addToWishlist = async (courseId: string) => {
+  const token = (await getAccesstoken()) as string;
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/wishlist`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ courseId }),
+        next: {
+          tags: ["addToWishlist"],
+          revalidate: 30,
+        },
+      },
+    );
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};
 export const removeFromWishlist = async (courseId: string) => {
   const token = (await getAccesstoken()) as string;
   try {

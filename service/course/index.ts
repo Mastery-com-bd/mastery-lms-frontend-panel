@@ -27,6 +27,29 @@ export const getMyCourses = async () => {
   }
 };
 
+export const getFeaturedCourses = async () => {
+  const token = (await getAccesstoken()) as string;
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url}/course/featured`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+        next: {
+          tags: ["FeaturedCourses"],
+          revalidate: 30,
+        },
+      },
+    );
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
 export const profileStats = async () => {
   const token = (await getAccesstoken()) as string;
   try {
