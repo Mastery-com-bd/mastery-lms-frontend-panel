@@ -50,7 +50,7 @@ export const getFeaturedCourses = async () => {
   }
 };
 
-export const profileStats = async () => {
+export const StudentReport = async () => {
   const token = (await getAccesstoken()) as string;
   try {
     const res = await fetch(
