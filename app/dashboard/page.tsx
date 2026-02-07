@@ -6,10 +6,13 @@ const Page = async () => {
   const learningProgress = studentDashboardReport.data.charts.learningProgress;
   const recentActivity = studentDashboardReport.data.recentActivity;
 
-
   return (
     <div>
-      <Dashboard learnerReport={learningProgress} recentActivity={recentActivity} />
+      <Dashboard
+        learnerReport={learningProgress}
+        recentActivity={recentActivity}
+        studentStats={studentDashboardReport.data.summary}
+      />
     </div>
   );
 };

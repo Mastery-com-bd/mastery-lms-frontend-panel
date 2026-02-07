@@ -70,9 +70,16 @@ const TimeSpendingChart = ({
 const Dashboard = ({
   learnerReport,
   recentActivity,
+  studentStats,
 }: {
   learnerReport: { date: string; lessons: number }[];
   recentActivity: RecentActivityPorps;
+  studentStats: {
+    totalActiveEnrollments: number;
+    totalCompletedEnrollments: number;
+    totalWatchedLessons: number;
+    completionRate: number;
+  };
 }) => {
   return (
     <div className="min-h-screen text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
@@ -176,7 +183,7 @@ const Dashboard = ({
           {[
             {
               label: "Enrolled Courses",
-              value: "957",
+              value: studentStats.totalActiveEnrollments,
               icon: Play,
               color: "text-red-500",
               bg: "bg-[#FFF5F2]",
@@ -184,7 +191,7 @@ const Dashboard = ({
             },
             {
               label: "Active Courses",
-              value: "6",
+              value: studentStats.totalActiveEnrollments,
               icon: Layout,
               color: "text-blue-600",
               bg: "bg-[#F0F2FF]",
@@ -192,7 +199,7 @@ const Dashboard = ({
             },
             {
               label: "Completed Courses",
-              value: "951",
+              value: studentStats.totalCompletedEnrollments,
               icon: Trophy,
               color: "text-green-600",
               bg: "bg-[#EFFBF2]",
