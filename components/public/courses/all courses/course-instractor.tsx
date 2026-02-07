@@ -86,7 +86,6 @@ const CourseInstractor = () => {
         //   total: meta?.total || 0,
         //   page: meta?.page || 0,
         // });
-        console.log("Instructors:", data, meta);
       };
       getUser();
     }, []);

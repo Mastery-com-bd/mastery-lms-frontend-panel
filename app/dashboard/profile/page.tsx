@@ -1,11 +1,12 @@
 import Profile from "@/components/dashboard/profile/Profile";
-import { getMyCourses, profileStats } from "@/service/course";
+import { getMyCourses, StudentReport } from "@/service/course";
 import { getMe } from "@/service/get-me";
 
 const Page = async () => {
   const myCourse = await getMyCourses();
-  const profileStatsResult = await profileStats();
+  const profileStatsResult = await StudentReport();
   const profile = await getMe();
+
 
   return (
     <div className="w-full h-full">

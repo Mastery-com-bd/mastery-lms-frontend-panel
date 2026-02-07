@@ -2,6 +2,10 @@ import { ProfileStatsProps } from "@/type/dashboard/profile";
 import { Award, BookOpen, CheckCircle2, PlayCircle } from "lucide-react";
 
 const ProfileStats = ({ profileStats }: { profileStats: ProfileStatsProps }) => {
+
+
+
+
   const { totalActiveEnrollments, totalCompletedEnrollments, totalWatchedLessons, completionRate } = profileStats.data.summary;
 
   const stats = [
