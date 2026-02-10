@@ -52,14 +52,6 @@ const StudentDashboardNavbar = () => {
 
         {/* Cart Icon */}
         <CartComponent />
-
-        {/* User Avatar */}
-        <div className="pl-3 ml-2 border-l border-gray-100">
-          <Avatar className="h-10 w-10 cursor-pointer border border-gray-100 hover:ring-2 hover:ring-gray-50 transition-all">
-            <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100" />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
-        </div>
       </div>
     </nav>
   );

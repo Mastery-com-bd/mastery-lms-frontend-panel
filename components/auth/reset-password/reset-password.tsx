@@ -11,8 +11,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { resetPassword } from "@/service/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,7 @@ import { z } from "zod";
 const resetPasswordSchema = z.object({
   otp: z.string().min(6, { message: "OTP must be 6 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
-  password: z
+  newPassword: z
     .string()
     .min(8, { message: "Password must be at least 8 characters" }),
 });
@@ -34,30 +35,32 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
+      otp: "",
       email: "",
-      password: "",
+      newPassword: "",
     },
   });
 
   async function onSubmit(values: ResetPasswordFormValues) {
     setIsLoading(true);
-    console.log(values);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/reset-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
+      const res = await resetPassword(values);
 
+      console.log("Reset password Response :", res)
+      if (!res.success) {
+        toast.dismiss();
+        toast.error(res.message);
+        return;
+      }
       toast.dismiss();
       toast.success("Password reset successful!");
+      setIsSuccess(true);
       router.push("/login");
     } catch (error) {
       console.error(error);
@@ -173,17 +176,32 @@ const ResetPassword = () => {
                     />
                     <FormField
                       control={form.control}
-                      name="password"
+                      name="newPassword"
                       render={({ field }) => (
                         <FormItem className="grid gap-1">
                           <FormLabel>New Password</FormLabel>
                           <FormControl>
-                            <Input
-                              type="password"
-                              disabled={isLoading}
-                              className="h-11"
-                              {...field}
-                            />
+                            <div className="relative">
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                disabled={isLoading}
+                                className="h-11 pr-10"
+                                {...field}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground hover:text-foreground"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
