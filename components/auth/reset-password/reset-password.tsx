@@ -51,8 +51,6 @@ const ResetPassword = () => {
     setIsLoading(true);
     try {
       const res = await resetPassword(values);
-
-      console.log("Reset password Response :", res)
       if (!res.success) {
         toast.dismiss();
         toast.error(res.message);
