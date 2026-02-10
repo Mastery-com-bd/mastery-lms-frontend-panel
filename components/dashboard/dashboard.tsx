@@ -8,13 +8,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bell, Clock, Edit2, Layout, Play, Trophy } from "lucide-react";
+import { RecentActivityPorps } from "@/type/dashboard";
+import { LiveClassProps } from "@/type/dashboard/live-class";
+import { TGetMeResponse } from "@/type/user.types";
+import { format } from "date-fns";
+import { Clock, Edit2, Layout, Play, Trophy } from "lucide-react";
 import Link from "next/link";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { ScrollArea } from "../ui/scroll-area";
-import { RecentActivityPorps } from "@/type/dashboard";
-import { TGetMeResponse } from "@/type/user.types";
 
 const TimeSpendingChart = ({
   data,
@@ -73,6 +73,7 @@ const Dashboard = ({
   recentActivity,
   studentStats,
   user,
+  liveClasses,
 }: {
   learnerReport: { date: string; lessons: number }[];
   recentActivity: RecentActivityPorps;
@@ -83,6 +84,7 @@ const Dashboard = ({
     completionRate: number;
   };
   user: TGetMeResponse;
+  liveClasses: LiveClassProps;
 }) => {
   return (
     <div className="min-h-screen text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
@@ -185,7 +187,7 @@ const Dashboard = ({
                     key={enrollment.id}
                     className="flex items-center gap-4 p-4 bg-background border border-border rounded-2xl hover:shadow-sm transition-all group"
                   >
-                    <div className="h-16 w-16 rounded-xl overflow-hidden flex-shrink-0 border">
+                    <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 border">
                       <img
                         src={enrollment.course.thumbnail.replace(/["']/g, "")}
                         alt={enrollment.course.title}
@@ -377,31 +379,20 @@ const Dashboard = ({
         <div>
           <h3 className="font-semibold mb-4">Upcoming Class</h3>
           <div className="space-y-3">
-            {[
-              {
-                time: "8:30",
-                title: "User Experience Design",
-                type: "Online . Zoom Meeting",
-              },
-              {
-                time: "9:30",
-                title: "User Interface Design",
-                type: "Online . Zoom Meeting",
-              },
-            ].map((cls, i) => (
+            {liveClasses.data.slice(0, 2).map((cls, i) => (
               <div
                 key={i}
                 className="flex items-start gap-3 p-3 bg-background border border-border rounded-xl"
               >
                 <div className="bg-muted/30 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap">
-                  {cls.time}
+                  {format(new Date(cls.startTime), "h:mm a")}
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold leading-tight">
-                    {cls.title}
+                    {cls.title.slice(0, 20)}
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-1">
-                    {cls.type}
+                    {cls.description.slice(0, 20)}
                   </p>
                 </div>
               </div>

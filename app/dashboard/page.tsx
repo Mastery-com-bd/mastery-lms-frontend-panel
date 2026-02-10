@@ -1,5 +1,6 @@
 import Dashboard from "@/components/dashboard/dashboard";
 import { StudentReport } from "@/service/course";
+import { getMyLiveClasses } from "@/service/dashboard/live-class";
 import { getMe } from "@/service/get-me";
 
 const Page = async () => {
@@ -7,8 +8,7 @@ const Page = async () => {
   const learningProgress = studentDashboardReport.data.charts.learningProgress;
   const recentActivity = studentDashboardReport.data.recentActivity;
   const getme = await getMe();
-
-  console.log("Get Me response :", getme)
+  const getLiveClass = await getMyLiveClasses();
 
   return (
     <div>
@@ -17,6 +17,7 @@ const Page = async () => {
         recentActivity={recentActivity}
         studentStats={studentDashboardReport.data.summary}
         user={getme}
+        liveClasses={getLiveClass}
       />
     </div>
   );
