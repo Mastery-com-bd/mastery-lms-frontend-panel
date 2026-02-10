@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Provider from "@/provider/Provider";
+import StoreProvider from "@/provider/StoreProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,10 +29,12 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-white`}
       >
-        <Provider>
-          {children}
-          <Toaster position="top-center" richColors />
-        </Provider>
+        <StoreProvider>
+          <Provider>
+            {children}
+            <Toaster position="top-center" richColors />
+          </Provider>
+        </StoreProvider>
       </body>
     </html>
   );

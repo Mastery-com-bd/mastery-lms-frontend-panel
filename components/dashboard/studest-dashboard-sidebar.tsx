@@ -64,6 +64,7 @@ const StudentDashboardSidebar = () => {
       });
     }
   };
+
   return (
     <aside className="w-full lg:w-64 border-r border-border p-6 flex-col justify-between gap-8 bg-card/30 hidden md:flex h-screen sticky top-0">
       <section className="space-y-4 flex-1">
