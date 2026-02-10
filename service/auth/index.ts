@@ -68,6 +68,48 @@ export const login = async (loginData: TLogin) => {
   }
 };
 
+// forgot password functionality
+export const forgotPassword = async (email: string) => {
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url as string}/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      },
+    );
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
+// reset password functionality
+export const resetPassword = async (resetData: {
+  otp: string;
+  email: string;
+  newPassword: string;
+}) => {
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url as string}/auth/reset-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(resetData),
+      },
+    );
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
 // get new token functionality
 export const getNewToken = async () => {
   try {

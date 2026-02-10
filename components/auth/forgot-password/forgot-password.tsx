@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { forgotPassword } from "@/service/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Mail } from "lucide-react";
 import Image from "next/image";
@@ -40,29 +41,26 @@ export default function ForgotPasswordPage() {
   });
 
   async function onSubmit(values: ForgotPasswordFormValues) {
-    console.log(values);
     setIsLoading(true);
     toast.loading("Sending Code");
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/forgot-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
+      const res = await forgotPassword(values.email);
+      if (res instanceof Error) {
+        toast.dismiss();
+        toast.error(res.message);
+        return;
+      }
+      router.push("/reset-password");
       toast.dismiss();
       toast.success("Code sent to your email!");
-      router.push("/reset-password");
+      setIsSubmitted(true);
     } catch (error) {
       console.error(error);
       toast.dismiss();
-      toast.error("Failed to send code. Please try again.");    
+      toast.error("Failed to send code. Please try again.");
     } finally {
       setIsLoading(false);
     }
-   
   }
 
   return (

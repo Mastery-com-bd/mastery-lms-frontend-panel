@@ -8,12 +8,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bell, Clock, Edit2, Layout, Play, Trophy } from "lucide-react";
+import { RecentActivityPorps } from "@/type/dashboard";
+import { LiveClassProps } from "@/type/dashboard/live-class";
+import { TGetMeResponse } from "@/type/user.types";
+import { format } from "date-fns";
+import { Clock, Edit2, Layout, Play, Trophy } from "lucide-react";
 import Link from "next/link";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { ScrollArea } from "../ui/scroll-area";
-import { RecentActivityPorps } from "@/type/dashboard";
 
 const TimeSpendingChart = ({
   data,
@@ -70,9 +71,20 @@ const TimeSpendingChart = ({
 const Dashboard = ({
   learnerReport,
   recentActivity,
+  studentStats,
+  user,
+  liveClasses,
 }: {
   learnerReport: { date: string; lessons: number }[];
   recentActivity: RecentActivityPorps;
+  studentStats: {
+    totalActiveEnrollments: number;
+    totalCompletedEnrollments: number;
+    totalWatchedLessons: number;
+    completionRate: number;
+  };
+  user: TGetMeResponse;
+  liveClasses: LiveClassProps;
 }) => {
   return (
     <div className="min-h-screen text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
@@ -91,84 +103,6 @@ const Dashboard = ({
               })}
             </p>
           </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative border group h-12 w-12 rounded-xl"
-              >
-                <Bell className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                <span className="absolute top-3 right-3 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-background" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="end">
-              <div className="p-4 border-b">
-                <h4 className="font-semibold">Notifications</h4>
-              </div>
-              <ScrollArea className="h-72">
-                <div className="divide-y">
-                  {[
-                    {
-                      id: 1,
-                      title: "New assignment available",
-                      desc: "UX Fundamentals - Module 3 quiz is now open",
-                      time: "5 min ago",
-                      unread: true,
-                    },
-                    {
-                      id: 2,
-                      title: "Class starting soon",
-                      desc: "UI Design live session begins in 15 minutes",
-                      time: "10 min ago",
-                      unread: true,
-                    },
-                    {
-                      id: 3,
-                      title: "Grade updated",
-                      desc: "Your submission for 'Wireframe Project' has been graded",
-                      time: "1 hour ago",
-                      unread: false,
-                    },
-                    {
-                      id: 4,
-                      title: "Course reminder",
-                      desc: "Complete 'Visual Hierarchy' lesson before tomorrow",
-                      time: "2 hours ago",
-                      unread: false,
-                    },
-                  ].map((n) => (
-                    <div
-                      key={n.id}
-                      className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
-                        n.unread ? "bg-blue-50/5" : ""
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{n.title}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {n.desc}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-2">
-                            {n.time}
-                          </p>
-                        </div>
-                        {n.unread && (
-                          <span className="h-2 w-2 rounded-full bg-blue-500" />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              <div className="p-2 border-t">
-                <Button variant="ghost" className="w-full text-xs" size="sm">
-                  View all notifications
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
         </header>
 
         {/* Quick Stats Summary */}
@@ -176,7 +110,7 @@ const Dashboard = ({
           {[
             {
               label: "Enrolled Courses",
-              value: "957",
+              value: studentStats.totalActiveEnrollments,
               icon: Play,
               color: "text-red-500",
               bg: "bg-[#FFF5F2]",
@@ -184,7 +118,7 @@ const Dashboard = ({
             },
             {
               label: "Active Courses",
-              value: "6",
+              value: studentStats.totalActiveEnrollments,
               icon: Layout,
               color: "text-blue-600",
               bg: "bg-[#F0F2FF]",
@@ -192,7 +126,7 @@ const Dashboard = ({
             },
             {
               label: "Completed Courses",
-              value: "951",
+              value: studentStats.totalCompletedEnrollments,
               icon: Trophy,
               color: "text-green-600",
               bg: "bg-[#EFFBF2]",
@@ -253,7 +187,7 @@ const Dashboard = ({
                     key={enrollment.id}
                     className="flex items-center gap-4 p-4 bg-background border border-border rounded-2xl hover:shadow-sm transition-all group"
                   >
-                    <div className="h-16 w-16 rounded-xl overflow-hidden flex-shrink-0 border">
+                    <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 border">
                       <img
                         src={enrollment.course.thumbnail.replace(/["']/g, "")}
                         alt={enrollment.course.title}
@@ -358,21 +292,24 @@ const Dashboard = ({
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-3 ">
             <Avatar className="h-24 w-24 border-4 shadow-lg border-primary">
-              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400&h=400&fit=crop" />
+              <AvatarImage src={user.data.profilePhoto} />
               <AvatarFallback>RP</AvatarFallback>
             </Avatar>
             <div className="absolute bottom-1 right-1 h-6 w-6 bg-yellow-400 rounded-full border-2 border-background flex items-center justify-center">
               <span className="text-[10px] font-bold">★</span>
             </div>
           </div>
-          <h3 className="font-bold text-lg">Royal Parvej</h3>
-          <p className="text-sm text-muted-foreground">@royalparvej</p>
+          <h3 className="font-bold text-lg">{user.data.fullName}</h3>
+          <p className="text-sm text-muted-foreground">@{user.data.email}</p>
 
           <div className="grid grid-cols-3 gap-2 w-full mt-6">
             {[
-              { label: "Rank", value: "10" },
-              { label: "Avr. Hour", value: "2h" },
-              { label: "Enrolled", value: "12" },
+              { label: "Enrolled", value: studentStats.totalActiveEnrollments },
+              { label: "Watched", value: studentStats.totalWatchedLessons },
+              {
+                label: "Completed",
+                value: studentStats.totalCompletedEnrollments,
+              },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -442,31 +379,20 @@ const Dashboard = ({
         <div>
           <h3 className="font-semibold mb-4">Upcoming Class</h3>
           <div className="space-y-3">
-            {[
-              {
-                time: "8:30",
-                title: "User Experience Design",
-                type: "Online . Zoom Meeting",
-              },
-              {
-                time: "9:30",
-                title: "User Interface Design",
-                type: "Online . Zoom Meeting",
-              },
-            ].map((cls, i) => (
+            {liveClasses.data.slice(0, 2).map((cls, i) => (
               <div
                 key={i}
                 className="flex items-start gap-3 p-3 bg-background border border-border rounded-xl"
               >
                 <div className="bg-muted/30 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap">
-                  {cls.time}
+                  {format(new Date(cls.startTime), "h:mm a")}
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold leading-tight">
-                    {cls.title}
+                    {cls.title.slice(0, 20)}
                   </h4>
                   <p className="text-[10px] text-muted-foreground mt-1">
-                    {cls.type}
+                    {cls.description.slice(0, 20)}
                   </p>
                 </div>
               </div>

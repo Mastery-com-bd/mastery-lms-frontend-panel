@@ -4,11 +4,7 @@
 import { sidebarRoutes } from "@/const/navigation.const";
 import { useUser } from "@/provider/AuthProvider";
 import { logout } from "@/service/auth";
-import {
-  LogOut,
-  LucideIcon,
-  Search
-} from "lucide-react";
+import { LogOut, LucideIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -79,13 +75,7 @@ const StudentDashboardSidebar = () => {
           </div>
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search"
-            className="pl-9 bg-background/50 border-border/50"
-          />
-        </div>
+        <div className="py-5" />
 
         <nav className="space-y-1.5 ">
           {sidebarRoutes.map((route) => (
@@ -102,10 +92,10 @@ const StudentDashboardSidebar = () => {
       <div className="w-full">
         <Button
           onClick={handleLogOut}
-          className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors relative text-muted-foreground hover:text-foreground w-full`}
+          className={`flex items-center text-white gap-3 px-4 py-3 cursor-pointer transition-colors relative w-full`}
         >
-          <LogOut className={`h-5 w-5 text-foreground`} />
-          <span className="text-foreground">Logout</span>
+          <LogOut className={`h-5 w-5 `} />
+          <span className="">Logout</span>
         </Button>
       </div>
     </aside>

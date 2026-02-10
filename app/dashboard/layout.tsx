@@ -7,9 +7,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className="flex ">
       <StudentDashboardSidebar />
       <div className="mx-auto container">
-        
         <StudentDashboardNavbar />
-        {children}</div>
+        {children}
+      </div>
     </div>
   );
 };
