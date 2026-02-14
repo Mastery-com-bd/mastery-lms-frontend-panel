@@ -82,21 +82,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-360 mx-auto max-h-screen h-full flex items-center">
-      <div className="w-1/2 z-20 flex items-center text-lg font-medium">
+    <div className="max-w-7xl mx-auto min-h-screen flex flex-col lg:flex-row items-center justify-center p-4 lg:p-0">
+      <div className="hidden lg:flex w-1/2 z-20 items-center justify-center p-12">
         <Image
           src="/auth/login.png"
-          alt="Logo"
+          alt="Login Illustration"
           width={800}
           height={2000}
-          className="w-full h-full object-contain"
+          className="w-full h-auto max-w-2xl object-contain"
         />
       </div>
 
-      <div className="lg:p-8 w-1/2">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-8 sm:w-162">
-          <div className="flex flex-col space-y-2 text-left">
-            <h1 className="text-[40px] leading-12 font-semibold">
+      <div className="w-full lg:w-1/2 flex items-center justify-center py-8 lg:p-8">
+        <div className="w-full max-w-112.5 lg:max-w-md xl:max-w-137.5 flex flex-col justify-center space-y-6 lg:space-y-8">
+          <div className="flex flex-col space-y-2 text-center lg:text-left">
+            <h1 className="text-3xl md:text-4xl lg:text-[40px] leading-tight font-semibold">
               Log in to your account
             </h1>
           </div>
@@ -167,31 +167,41 @@ export default function LoginPage() {
                     )}
                   />
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="remember"
-                        className="h-6 w-6 border-gray-300"
-                      />
-                      <label
-                        htmlFor="remember"
-                        className="text-lg text-gray-400 font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center justify-between w-full sm:w-auto sm:space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="remember"
+                          className="h-5 w-5 md:h-6 md:w-6 border-gray-300"
+                        />
+                        <label
+                          htmlFor="remember"
+                          className="text-base md:text-lg text-gray-400 font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Remember me
+                        </label>
+                      </div>
+                      <Link
+                        href="/forgot-password"
+                        className="text-base md:text-lg text-gray-400 font-normal hover:text-[#D90000] sm:hidden"
                       >
-                        Remember me
-                      </label>
+                        Forgot?
+                      </Link>
                     </div>
+
                     <Link
                       href="/forgot-password"
-                      className="text-lg text-gray-400 font-normal hover:text-[#D90000]"
+                      className="hidden sm:block text-base md:text-lg text-gray-400 font-normal hover:text-[#D90000]"
                     >
                       Forgot Password?
                     </Link>
+
                     <Button
-                      className="h-14 sm:w-50 px-8 bg-[#D90000] hover:bg-[#B30000] text-white text-xl font-bold rounded-none flex items-center gap-4"
+                      className="h-12 md:h-14 w-full sm:w-auto px-8 bg-[#D90000] hover:bg-[#B30000] text-white text-lg md:text-xl font-bold rounded-none flex items-center justify-center gap-4"
                       disabled={form.formState.isSubmitting}
                     >
                       Log In
-                      <ArrowRight className="h-6 w-6" />
+                      <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
                     </Button>
                   </div>
                 </form>
