@@ -7,9 +7,11 @@ const quicksand = Quicksand({ subsets: ["latin"] });
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className=" bg-white">
+    <div className=" bg-white flex flex-col min-h-screen">
       <Navbar />
-      {children}
+      <main className="flex-grow overflow-hidden w-full leading-relaxed">
+        {children}
+      </main>
       <Footer />
     </div>
   );
