@@ -81,23 +81,23 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-480 mx-auto max-h-screen h-full flex items-center">
+    <div className="max-w-7xl mx-auto min-h-screen flex flex-col lg:flex-row items-center justify-center p-4 lg:p-0">
       {/* Brand Panel */}
-      <div className="w-1/2 max-h-[calc(100vh-81px)] z-20 flex items-center justify-center text-lg font-medium bg-primary">
+      <div className="hidden lg:flex w-1/2 z-20 items-center justify-center p-12 bg-primary self-stretch">
         <Image
           src="/auth/SignUp.png"
-          alt="Logo"
+          alt="Sign Up Illustration"
           width={800}
           height={2000}
-          className="w-full h-full object-contain"
+          className="w-full h-auto max-w-2xl object-contain"
         />
       </div>
 
       {/* Register Form Panel */}
-      <div className="lg:p-8 w-1/2">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-2 sm:w-150">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-[40px] font-semibold leading-12 text-[#1a1a1a]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center py-8 lg:p-8">
+        <div className="w-full max-w-112.5 lg:max-w-md xl:max-w-137.5 flex flex-col justify-center space-y-6 lg:space-y-8">
+          <div className="flex flex-col space-y-2 text-center lg:text-left">
+            <h1 className="text-3xl md:text-4xl lg:text-[40px] leading-tight font-semibold text-[#1a1a1a]">
               Create your account
             </h1>
           </div>
@@ -156,7 +156,7 @@ export default function RegisterPage() {
                     )}
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                     <FormField
                       control={form.control}
                       name="password"
@@ -229,12 +229,12 @@ export default function RegisterPage() {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between pt-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4">
                     <FormField
                       control={form.control}
                       name="terms"
                       render={({ field }) => (
-                        <FormItem className="flex gap-0 items-center space-x-3 space-y-0">
+                        <FormItem className="flex gap-0 items-center space-x-3 space-y-0 w-full sm:w-auto">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -245,12 +245,7 @@ export default function RegisterPage() {
                           <div className="space-y-1 leading-none">
                             <FormLabel className="text-[16px] text-gray-400 font-normal">
                               I Agree with all of your{" "}
-                              <Link
-                                href="/terms"
-                                className="text-blue-600 hover:underline"
-                              >
-                                Terms & Conditions
-                              </Link>
+                              
                             </FormLabel>
                             <FormMessage />
                           </div>
@@ -259,12 +254,12 @@ export default function RegisterPage() {
                     />
                     <Button
                       type="submit"
-                      className="h-14 px-8 bg-primary text-white text-xl font-bold rounded-none flex items-center gap-4"
+                      className="h-14 w-full sm:w-auto px-8 bg-primary text-white text-lg md:text-xl font-bold rounded-none flex items-center justify-center gap-4"
                       disabled={form.formState.isSubmitting}
                     >
                       Create Account
                       <svg
-                        className="h-6 w-6"
+                        className="h-5 w-5 md:h-6 md:w-6"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
