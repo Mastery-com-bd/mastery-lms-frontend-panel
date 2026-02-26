@@ -16,13 +16,13 @@ const NewsLetter = () => {
 
           {/* Subscription Form */}
           <div className="w-full max-w-md lg:max-w-lg">
-            <div className="flex h-14 w-full bg-[#FEF7FF]/85 rounded-xl overflow-hidden backdrop-blur-sm border border-white/10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 h-auto sm:h-14 w-full sm:bg-[#FEF7FF]/85 rounded-xl sm:overflow-hidden backdrop-blur-sm sm:border border-white/10">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-6 text-[#48555F] font-semibold placeholder:text-[#48555F] placeholder:font-semibold focus:outline-none text-lg "
+                className="w-full sm:flex-1 h-14 sm:h-auto px-6 bg-[#FEF7FF]/85 sm:bg-transparent rounded-xl sm:rounded-none text-[#48555F] font-semibold placeholder:text-[#48555F] placeholder:font-semibold focus:outline-none text-lg"
               />
-              <Button className="bg-white hover:bg-white/90 text-[#2d0a2d] px-8 h-full font-bold flex items-center gap-2 transition-colors whitespace-nowrap">
+              <Button className="w-full sm:w-auto bg-white hover:bg-white/90 text-[#2d0a2d] px-8 h-14 sm:h-full font-bold flex items-center justify-center gap-2 transition-colors whitespace-nowrap rounded-xl sm:rounded-none">
                 🚀 Subscribe
               </Button>
             </div>

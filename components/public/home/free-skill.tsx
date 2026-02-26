@@ -14,10 +14,6 @@ const FreeSkill = () => {
         }}
       />
 
-      {/* Gradient blobs */}
-      {/* <div className="absolute top-20 left-20 w-96 h-96 bg-pink-300 rounded-full opacity-40 blur-3xl z-0" /> */}
-      {/* <div className="absolute top-40 left-60 w-80 h-80 bg-gray-200 rounded-full opacity-50 blur-3xl z-0" /> */}
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl mx-auto">
           {/* Left Side: Content */}

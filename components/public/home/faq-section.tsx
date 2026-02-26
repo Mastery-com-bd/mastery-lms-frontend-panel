@@ -37,7 +37,7 @@ const faqs = [
 
 const FaqSection = () => {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-8 md:py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
           {/* Left Side: Title */}

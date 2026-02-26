@@ -184,9 +184,10 @@ export default function LoginPage() {
                         htmlFor="remember"
                         className="text-sm font-medium text-gray-600 cursor-pointer select-none"
                       >
-                        Remember me
-                      </label>
+                        Forgot?
+                      </Link>
                     </div>
+
                     <Link
                       href="/forgot-password"
                       className="text-sm font-semibold text-primary hover:text-[#B30000] transition-colors"

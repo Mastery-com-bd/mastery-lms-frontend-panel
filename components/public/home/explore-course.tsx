@@ -29,7 +29,7 @@ const ExploreCourse = () => {
           </div>
 
           {/* Illustration Section */}
-          <div className="relative h-100 md:h-125 lg:h-150 w-full">
+          <div className="relative h-100 md:h-125 lg:h-150 w-full overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               {/* This is a placeholder for the 3D chkaracter jumping on books illustration */}
               <div className="relative w-full h-full max-w-125">

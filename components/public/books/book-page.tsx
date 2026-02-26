@@ -1,6 +1,10 @@
+import { TBooks } from "@/type/books.types";
 import BookCardV4 from "./book-cardV4";
+import { TMeta } from "@/type/meta.types";
 
-const BookPage = () => {
+type TBookPageProps = { books: TBooks[]; meta: TMeta };
+
+const BookPage = ({ books, meta }: TBookPageProps) => {
   return (
     <div>
         <h2 className=" w-full text-primary text-5xl font-bold text-center pt-10">All Products</h2>
