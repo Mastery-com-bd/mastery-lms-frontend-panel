@@ -55,8 +55,8 @@ const CartComponent = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative group hover:border hover:bg-none hover:text-primary transition-colors">
-          <ShoppingCart className="h-5 w-5 transition-colors" />
+        <Button variant="ghost" size="icon" className="relative group hover:border hover:bg-white hover:text-primary ">
+          <ShoppingCart className="h-5 w-5 " />
           {items.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
               {items.length}

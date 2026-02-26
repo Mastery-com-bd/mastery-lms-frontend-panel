@@ -4,10 +4,11 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/provider/AuthProvider";
+import CartComponent from "@/components/dashboard/cart/cart-component";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import { logout } from "@/service/auth";
@@ -21,7 +22,6 @@ import {
   Sheet,
   SheetContent,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
@@ -37,6 +37,7 @@ import {
   Phone,
   X,
   UserPlus,
+  Heart,
 } from "lucide-react";
 
 const navLinks = [
@@ -49,9 +50,35 @@ const navLinks = [
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const pathname = usePathname();
   const { user, setUser, setIsLoading } = useUser();
   const router = useRouter();
+
+  // Fetch wishlist count whenever user or route changes
+  useEffect(() => {
+    if (!user) {
+      setWishlistCount(0);
+      return;
+    }
+    const fetchWishlistCount = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/wishlist`,
+          { method: "GET" }
+        );
+        const data = await res.json();
+        if (data?.meta?.total !== undefined) {
+          setWishlistCount(data.meta.total);
+        } else if (Array.isArray(data?.data)) {
+          setWishlistCount(data.data.length);
+        }
+      } catch {
+        // silent fail — don't block UI
+      }
+    };
+    fetchWishlistCount();
+  }, [user, pathname]);
 
   const handleLogOut = async () => {
     const toastId = toast.loading("Logging out...", { duration: 3000 });
@@ -114,7 +141,26 @@ const Navbar = () => {
               })}
             </div>
 
-            <div className="pl-4 border-l border-gray-200">
+            <div className="pl-4 border-l border-gray-200 flex items-center gap-3">
+              {/* Wishlist Icon — only for logged-in users */}
+              {user && (
+                <Link
+                  href="/dashboard/wishlist"
+                  className="relative p-2 text-gray-500 hover:text-primary transition-colors group"
+                  title="My Wishlist"
+                >
+                  <Heart className="w-6 h-6 group-hover:fill-primary/20 transition-all" />
+                  {wishlistCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow">
+                      {wishlistCount > 99 ? "99+" : wishlistCount}
+                    </span>
+                  )}
+                </Link>
+              )}
+
+              {/* Cart — existing CartComponent (always visible) */}
+              <CartComponent />
+
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -124,11 +170,23 @@ const Navbar = () => {
                     </Button>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent align="end" className="w-44 rounded-xl shadow-lg border-gray-100">
+                  <DropdownMenuContent align="end" className="w-48 rounded-xl shadow-lg border-gray-100">
                     <DropdownMenuItem asChild className="hover:bg-gray-50 rounded-md cursor-pointer transition-colors p-3">
                       <Link href="/dashboard" className="flex items-center gap-3">
                         <LayoutDashboard className="h-4 w-4 text-gray-500" />
                         <span className="font-medium">Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem asChild className="hover:bg-gray-50 rounded-md cursor-pointer transition-colors p-3">
+                      <Link href="/dashboard/wishlist" className="flex items-center gap-3">
+                        <Heart className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">Wishlist</span>
+                        {wishlistCount > 0 && (
+                          <span className="ml-auto bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                            {wishlistCount}
+                          </span>
+                        )}
                       </Link>
                     </DropdownMenuItem>
 
@@ -152,8 +210,27 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button with Sheet */}
-          <div className="md:hidden">
+          {/* Mobile — Wishlist + Cart + Hamburger */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* Mobile Wishlist Icon */}
+            {user && (
+              <Link
+                href="/dashboard/wishlist"
+                className="relative p-2 text-gray-500 hover:text-primary transition-colors"
+                title="My Wishlist"
+              >
+                <Heart className="w-6 h-6" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow">
+                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            {/* Mobile Cart — existing CartComponent */}
+            <CartComponent />
+
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <button
@@ -185,7 +262,7 @@ const Navbar = () => {
                 </SheetHeader>
 
                 <div className="w-full flex-1 overflow-y-auto py-2 flex flex-col">
-                  {/* Menu Links */}
+                  {/* Nav Links */}
                   <div className="flex flex-col py-2">
                     {navLinks.map((link) => {
                       const Icon = link.icon;
@@ -209,7 +286,7 @@ const Navbar = () => {
                     })}
                   </div>
 
-                  {/* Account Section in Sidebar */}
+                  {/* Account Section */}
                   <div className="flex flex-col py-2 pb-8 mt-auto">
                     <Separator className="my-2 bg-gray-100 mx-6 w-auto" />
                     <p className="px-6 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-2">
@@ -224,6 +301,19 @@ const Navbar = () => {
                         >
                           <LayoutDashboard className="h-5 w-5 text-gray-500" />
                           Dashboard
+                        </Link>
+                        <Link
+                          href="/dashboard/wishlist"
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-center gap-4 px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                        >
+                          <Heart className="h-5 w-5 text-gray-500" />
+                          <span>Wishlist</span>
+                          {wishlistCount > 0 && (
+                            <span className="ml-auto bg-primary text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                              {wishlistCount}
+                            </span>
+                          )}
                         </Link>
                         <button
                           onClick={() => {
