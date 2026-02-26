@@ -69,14 +69,14 @@ const BookCardV3 = ({
 
           <div className="flex items-center gap-6">
             <span className="text-4xl font-black text-[#1a1a1a]">
-              ${price}{" "}
+              ৳{price}{" "}
               <span className="text-lg font-bold text-gray-400 uppercase tracking-tighter">
                 {currency}
               </span>
             </span>
             {originalPrice && (
               <span className="text-xl text-gray-400 line-through font-medium">
-                ${originalPrice}
+                ৳{originalPrice}
               </span>
             )}
           </div>

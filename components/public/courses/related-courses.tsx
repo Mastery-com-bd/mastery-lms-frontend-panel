@@ -32,7 +32,7 @@ const CourseCard = ({
           >
             {category.name}
           </span>
-          <span className="text-[#CC0000] font-black text-lg">${price} $</span>
+          <span className="text-[#CC0000] font-black text-lg">৳{price}</span>
         </div>
         <h3 className="text-[#1a1a1a] font-bold text-base leading-snug line-clamp-2 flex-1">
           {title}

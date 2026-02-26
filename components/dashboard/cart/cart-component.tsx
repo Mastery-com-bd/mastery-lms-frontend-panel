@@ -50,7 +50,7 @@ const CartComponent = () => {
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative group hover:border hover:bg-white hover:text-primary ">
           <ShoppingCart className="h-5 w-5 " />
-          {items.length > 0 && (
+          {currentCartData.length > 0 && (
             <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
               {currentCartData.length}
             </span>
@@ -163,7 +163,7 @@ const CartComponent = () => {
             <div className="w-full space-y-4">
               <div className="flex items-center justify-between text-base font-semibold">
                 <span>Total</span>
-                <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                <span className="text-primary">৳{totalPrice.toFixed(2)}</span>
               </div>
               <p className="text-xs text-muted-foreground text-center">
                 Tax calculated at checkout

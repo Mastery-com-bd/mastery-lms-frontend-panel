@@ -185,7 +185,7 @@ export default function LoginPage() {
                         className="text-sm font-medium text-gray-600 cursor-pointer select-none"
                       >
                         Forgot?
-                      </Link>
+                      </label>
                     </div>
 
                     <Link

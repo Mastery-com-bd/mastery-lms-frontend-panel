@@ -328,11 +328,11 @@ const CourseDetails = ({
               <div className="space-y-2">
                 <div className="flex items-center gap-4">
                   <span className="text-5xl font-black text-[#1a1a1a]">
-                    ${course.discountPrice || course.price}
+                    ৳{course.discountPrice || course.price}
                   </span>
                   {course.discountPrice && (
                     <span className="text-gray-300 line-through text-xl font-medium">
-                      ${course.price}
+                      ৳{course.price}
                     </span>
                   )}
                   {discountPercentage > 0 && (

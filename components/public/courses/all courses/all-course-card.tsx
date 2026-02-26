@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { Star, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,18 +43,12 @@ const AllCourseCard = ({
             {category}
           </span>
           <span className="text-[#CC0000] font-black text-2xl">
-            ${price} {currency}
+            ৳{price} {currency}
           </span>
         </div>
         <Link href={`/courses/${id}`} className="">
           <h3 className="text-[#1a1a1a] font-bold text-xl leading-tight line-clamp-2 min-h-12 hover:text-[#4f46e5] hover:underline">
-            {title} Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Repellendus quod distinctio accusantium molestiae doloribus aut
-            laboriosam laudantium in nostrum quisquam incidunt sapiente corporis
-            facilis rem repellat temporibus, consequuntur deleniti enim sequi
-            expedita. Suscipit, quae error maxime vitae nisi nesciunt
-            voluptatibus qui eligendi iusto labore dolorum exercitationem
-            quibusdam, neque earum animi!
+            {title}
           </h3>
         </Link>
 
@@ -72,6 +67,36 @@ const AllCourseCard = ({
               <span className="text-gray-400 font-medium">students</span>
             </span>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const AllCourseCardSkeleton = () => {
+  return (
+    <div className="bg-white overflow-hidden border border-gray-100 flex flex-col h-full">
+      {/* Image Skeleton */}
+      <Skeleton className="aspect-4/3 w-full" />
+
+      {/* Content Skeleton */}
+      <div className="p-5 flex flex-col flex-1 gap-4">
+        {/* Category + Price */}
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-5 w-24 rounded" />
+          <Skeleton className="h-6 w-16 rounded" />
+        </div>
+
+        {/* Title */}
+        <div className="space-y-2 min-h-12">
+          <Skeleton className="h-5 w-full rounded" />
+          <Skeleton className="h-5 w-3/4 rounded" />
+        </div>
+
+        {/* Footer */}
+        <div className="pt-5 mt-auto border-t border-gray-50 flex items-center justify-between">
+          <Skeleton className="h-5 w-16 rounded" />
+          <Skeleton className="h-5 w-24 rounded" />
         </div>
       </div>
     </div>

@@ -54,7 +54,7 @@ const BookCardV4 = ({ book }: { book: TBooks }) => {
         <div className="space-y-4">
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold text-[#1a1a1a]">
-              ${book?.price} ৳
+              ৳{book?.price}
             </span>
           </div>
 

@@ -3,7 +3,7 @@
 import PaginatioComponent from "@/components/shared/pagination";
 import { useEffect, useState } from "react";
 import RelatedCourses from "../related-courses";
-import AllCourseCard from "./all-course-card";
+import AllCourseCard, { AllCourseCardSkeleton } from "./all-course-card";
 import CourseInstractor from "./course-instractor";
 import CourseOffer from "./course-offer";
 import CourseSupport from "./course-support";
@@ -37,6 +37,7 @@ const AllCoueses = ({ featuredCourses }: { featuredCourses: TFeaturedCourse }) =
     },
   });
   const [courses, setCourses] = useState<CourseProps[]>([]);
+  const [loading, setLoading] = useState(true);
   const [meta, setMeta] = useState<{
     limit: number;
     total: number;
@@ -49,6 +50,7 @@ const AllCoueses = ({ featuredCourses }: { featuredCourses: TFeaturedCourse }) =
 
   useEffect(() => {
     const getCourses = async () => {
+      setLoading(true);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/course/published?${query.query ? `searchTerm=${query.query}` : ""}${query.filter.language && query.filter.language !== "ALL" ? `&language=${query.filter.language}` : ""}${query.filter.subject && query.filter.subject !== "ALL" ? `&subject=${query.filter.subject}` : ""}`,
         {
@@ -62,6 +64,7 @@ const AllCoueses = ({ featuredCourses }: { featuredCourses: TFeaturedCourse }) =
         total: meta?.total || 0,
         page: meta?.page || 0,
       });
+      setLoading(false);
     };
     getCourses();
   }, [query]);
@@ -73,19 +76,23 @@ const AllCoueses = ({ featuredCourses }: { featuredCourses: TFeaturedCourse }) =
 
       {/* All Courses */}
       <div className="grid grid-cols-3 gap-4 mt-10 px-10">
-        {courses.map((course) => (
-          <AllCourseCard
-            id={course.id}
-            key={course.id}
-            image={course.thumbnail}
-            category={course.category.name}
-            price={course.price}
-            currency="USD"
-            title={course.title}
-            rating={course.ratingsCount}
-            studentCount={course.enrolledCount || 0}
-          />
-        ))}
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+            <AllCourseCardSkeleton key={i} />
+          ))
+          : courses.map((course) => (
+            <AllCourseCard
+              id={course.id}
+              key={course.id}
+              image={course.thumbnail}
+              category={course.category.name}
+              price={course.price}
+              currency="৳"
+              title={course.title}
+              rating={course.ratingsCount}
+              studentCount={course.enrolledCount || 0}
+            />
+          ))}
       </div>
 
       {/* Pagination */}
