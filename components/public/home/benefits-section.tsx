@@ -48,41 +48,39 @@ const BenefitsSection = () => {
     <section className="py-20 relative overflow-hidden bg-background">
       {/* Decorative Icons */}
       <motion.div
-        className="absolute top-20 left-10 lg:left-20"
+        className="absolute top-6 -left-6 sm:left-4 md:top-20 md:left-10 lg:left-20 opacity-20 sm:opacity-30 md:opacity-100 z-0 pointer-events-none"
         animate={{ y: [0, -20, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
-        <span className="">
-          <Image
-            src="/icons/World Illustration.png"
-            alt="Books Icon"
-            width={144}
-            height={144}
-          />
-        </span>
+        <Image
+          src="/icons/World Illustration.png"
+          alt="World Icon"
+          width={144}
+          height={144}
+          className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 object-contain"
+        />
       </motion.div>
       <motion.div
-        className="absolute top-20 right-10 lg:right-20"
-        animate={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
+        className="absolute top-28 -right-6 sm:right-4 md:top-20 md:right-10 lg:right-20 opacity-20 sm:opacity-30 md:opacity-100 z-0 pointer-events-none"
+        animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
-        <span className="">
-          <Image
-            src="/icons/Book Illustration.png"
-            alt="Books Icon"
-            width={144}
-            height={144}
-          />
-        </span>
+        <Image
+          src="/icons/Book Illustration.png"
+          alt="Books Icon"
+          width={144}
+          height={144}
+          className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 object-contain"
+        />
       </motion.div>
 
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl lg:text-4xl font-bold  mb-12">
+      <div className="container mx-auto px-4 text-center relative z-10">
+        <h2 className="text-3xl lg:text-4xl font-bold mb-12">
           Join millions of confident learners
         </h2>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto border-y border-white/20 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-16 mb-16 max-w-4xl mx-auto border-y border-black/10 py-8">
           {stats.map((stat) => (
             <div key={stat.label} className="space-y-1">
               <p className="/70 text-sm font-medium">{stat.label}</p>
@@ -107,8 +105,8 @@ const BenefitsSection = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-16">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-10">
+          <div className="flex flex-wrap justify-center items-center gap-2">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(
               (grade) => (
                 <button

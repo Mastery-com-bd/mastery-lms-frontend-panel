@@ -50,6 +50,29 @@ export const getFeaturedCourses = async () => {
   }
 };
 
+export const getPublishedCourses = async () => {
+  const token = (await getAccesstoken()) as string;
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url}/course/published?sortBy=enrolledCount&sortOrder=desc&limit=10`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token,
+        },
+        next: {
+          tags: ["PublishedCourses"],
+          revalidate: 30,
+        },
+      },
+    );
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
 export const StudentReport = async () => {
   const token = (await getAccesstoken()) as string;
   try {

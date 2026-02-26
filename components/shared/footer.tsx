@@ -9,13 +9,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Column */}
           <div className="space-y-6">
-            <div className="flex items-center gap-2 -ml-10">
+            <div className="flex items-center gap-2 w-36 border border-gray-200 rounded-md">
               <Image
                 src="/logo.png"
                 alt="MiNi Online Skills"
-                width={150}
+                width={200}
                 height={40}
-                className="w-auto"
+                className="w-full"
               />
             </div>
             <p className="text-gray-500 text-lg font-medium leading-relaxed max-w-xs">

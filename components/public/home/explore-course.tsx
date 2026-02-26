@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const ExploreCourse = () => {
   return (
-    <section className="relative bg-linear-to-b from-[#2d0a2d] to-[#1a051a]">
+    <section className="relative bg-linear-to-b from-[#2d0a2d] to-[#1a051a] py-4">
       
 
       <div className="container relative z-10 mx-auto px-4 ">

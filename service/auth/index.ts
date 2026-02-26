@@ -30,6 +30,52 @@ export const signUp = async (loginData: RegisterFormValues) => {
   }
 };
 
+// verify email functionality
+export const verifyEmail = async (verifyData: {
+  email: string;
+  otp: string;
+}) => {
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url as string}/auth/verify-email`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(verifyData),
+      },
+    );
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
+// resend OTP functionality
+export const resendOTP = async (verifyData: {
+  email: string;
+  purpose: "email_verification" | "password_reset";
+}) => {
+  try {
+    const res = await fetch(
+      `${config.next_public_server_url as string}/auth/resend-otp`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(verifyData),
+      },
+    );
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+
 // login functionality
 export const login = async (loginData: TLogin) => {
   try {

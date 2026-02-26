@@ -1,12 +1,12 @@
 import AllCoueses from "@/components/public/courses/all courses/all-courses";
-import { getFeaturedCourses } from "@/service/course";
+import { getPublishedCourses } from "@/service/course";
 
 const Page = async () => {
-  const featuredCourses = await getFeaturedCourses();
+  const publishedCourses = await getPublishedCourses();
 
   return (
     <div className="w-full h-full bg-white">
-      <AllCoueses featuredCourses={featuredCourses} />
+      <AllCoueses featuredCourses={publishedCourses} />
     </div>
   );
 };

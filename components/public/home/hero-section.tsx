@@ -17,7 +17,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-8 relative pt-32 px-14 sm:px-16 md:px-0 flex flex-col items-center md:items-start text-center md:text-left"
+            className="space-y-8 relative pt-32  sm:px-16 md:px-0 flex flex-col items-center md:items-start text-center md:text-left"
           >
             {/* Decorative Lines */}
             <div className="absolute top-0 left-0 h-40 w-px bg-red-500 " />

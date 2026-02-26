@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const CourseCard = ({
+  id,
   thumbnail,
   category,
   price,
@@ -12,7 +13,10 @@ const CourseCard = ({
   enrolledCount,
 }: TFeaturedCourseItem) => {
   return (
-    <div className="group bg-white rounded-xl overflow-hidden border border-gray-100 flex flex-col h-full hover:shadow-xl transition-all duration-300">
+    <Link
+      href={`/courses/${id}`}
+      className="group bg-white rounded-xl overflow-hidden border border-gray-100 flex flex-col h-full hover:shadow-xl transition-all duration-300"
+    >
       <div className="relative aspect-4/3 w-full overflow-hidden">
         <Image
           src={thumbnail || ""}
@@ -45,7 +49,7 @@ const CourseCard = ({
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -54,7 +58,6 @@ const RelatedCourses = ({
 }: {
   relatedCourses: TFeaturedCourse;
 }) => {
-
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">

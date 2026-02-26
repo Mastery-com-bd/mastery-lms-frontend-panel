@@ -1,13 +1,13 @@
 import CourseDetails from "@/components/public/courses/course-details";
-import { getFeaturedCourses } from "@/service/course";
+import { getPublishedCourses } from "@/service/course";
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  const featuredCourses = await getFeaturedCourses();
+  const publishedCourses = await getPublishedCourses();
 
   return (
     <div>
-      <CourseDetails id={id} relatedCourses={featuredCourses} />
+      <CourseDetails id={id} relatedCourses={publishedCourses} />
     </div>
   );
 };
