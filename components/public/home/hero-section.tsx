@@ -17,7 +17,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-8 relative pt-32"
+            className="space-y-8 relative pt-32  sm:px-16 md:px-0 flex flex-col items-center md:items-start text-center md:text-left"
           >
             {/* Decorative Lines */}
             <div className="absolute top-0 left-0 h-40 w-px bg-red-500 " />
@@ -29,19 +29,19 @@ const HeroSection = () => {
             <div className="absolute top-0 right-8 h-30 w-px bg-red-500 " />
             <div className="absolute top-0 right-12 h-20 w-px bg-red-500 " />
             <div className="space-y-4">
-              <h1 className="text-5xl lg:text-7xl font-bold font-display leading-tight text-[#1A1A1A]">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-display leading-tight text-[#1A1A1A] break-words">
                 Transforming <br />
                 education into <br />
                 <span className="text-[#D90000]">adventure</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
                 At MiNi Online Skills, we believe in turning &quot;I have to
                 learn&quot; into &quot;I get to learn&quot;. A journey filled
                 with excitement that teach.
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap justify-center md:justify-start items-center gap-4">
               <Button
                 asChild
                 className="bg-[#D90000] hover:bg-[#B30000] text-white px-8 h-14 rounded-xl font-bold text-lg shadow-lg shadow-red-500/20"
@@ -59,7 +59,7 @@ const HeroSection = () => {
               </Button>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-3">
               <div className="flex items-center gap-1">
                 <span className="font-bold text-lg">4.8/5.0</span>
                 <div className="flex items-center">
