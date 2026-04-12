@@ -1,5 +1,6 @@
 "use client";
 
+import { createEnrollment, initiatePayment } from "@/service/payment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -50,8 +51,6 @@ const Checkout = ({ courseId }: { courseId: string }) => {
     router.push("/");
   }
 
-
-
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -68,31 +67,21 @@ const Checkout = ({ courseId }: { courseId: string }) => {
     showLoading("Processing payment...");
     setLoading(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/payment/enrollment`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ courseId, ...values }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          console.log("First Request: ",data)
-          await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/payment/surjopay/${data.data.id}`,
-            {
-              method: "POST",
-              credentials: "include",
-              body: JSON.stringify(values),
-            },
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data)
-              router.push(data.data.checkout_url);
-            });
-        });
+      const enrollmentRes = await createEnrollment({ courseId, ...values });
+      console.log("Enrollment Response: ", enrollmentRes);
+
+      if (!enrollmentRes.success) {
+        throw new Error(enrollmentRes.message || "Enrollment failed");
+      }
+
+      const paymentRes = await initiatePayment(enrollmentRes.data.id, values);
+      console.log("Payment Response: ", paymentRes);
+
+      if (!paymentRes.success) {
+        throw new Error(paymentRes.message || "Payment initiation failed");
+      }
+
+      router.push(paymentRes.data.checkout_url);
     } catch (error) {
       console.log(error);
       toast.dismiss();
